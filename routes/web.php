@@ -17,7 +17,7 @@ Route::post('update-password', [ResetPasswordController::class, 'resetPassword']
 
 
 Route::middleware(['auth'])->group(function () {
-    Route::post('/logout', [SessionController::class, 'logout'])->name('logout');
+    Route::get('/logout', [SessionController::class, 'logout'])->name('logout');
 
     Route::get('/dashboard', [DashboardController::class, '__invoke'])->name('dashboard');
 });
