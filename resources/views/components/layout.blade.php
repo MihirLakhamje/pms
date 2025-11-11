@@ -11,12 +11,12 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
 
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
+    
     <!-- Styles / Scripts -->
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @endif
+    <script src="//unpkg.com/alpinejs" defer></script>
 </head>
 
 <body>
@@ -123,11 +123,11 @@
                                     Dashboard
                                 </x-sidebar-link>
 
-                                {{-- <x-sidebar-link href="{{ route('users.index') }}"
+                                <x-sidebar-link href="{{ route('users.index') }}"
                                     :isActive="request()->routeIs('users.index') || request()->routeIs('users.*')">
                                     <span class="icon-[tabler--users-group] size-4.5"></span>
-                                    People
-                                </x-sidebar-link> --}}
+                                    Users
+                                </x-sidebar-link>
                             </ul>
                         </div>
 
