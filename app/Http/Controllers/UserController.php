@@ -2,12 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\Rules\Enum;
-
 class UserController extends Controller
 {
     public function index()
@@ -26,7 +23,7 @@ class UserController extends Controller
         $request->validate([
             'name' => ['required','string','max:255'],
             'email' => ['required','email','max:255','unique:users,email,'],
-            'role' => ['required', new Enum(Role::class)],
+            'role' => ['required', 'string','in:admin,manager,employee'],
         ]);
         try {
             $user->update([
@@ -53,7 +50,7 @@ class UserController extends Controller
         $validated = $request->validate([
             'name' => ['required','string','max:255'],
             'email' => ['required','email','max:255','unique:users,email'],
-            'role' => ['required', new Enum(Role::class)],
+            'role' => ['required', 'string','in:admin,manager,employee'],
             'password' => ['required','string','min:6'],
         ]);
         try {
