@@ -135,6 +135,12 @@
                                     <span class="icon-[tabler--bulb] size-4.5"></span>
                                     Projects
                                 </x-sidebar-link>
+
+                                <x-sidebar-link href="{{ route('tasks.index') }}"
+                                    :isActive="request()->routeIs('tasks.index') || request()->routeIs('tasks.*')">
+                                    <span class="icon-[tabler--subtask] size-4.5"></span>
+                                    Tasks
+                                </x-sidebar-link>
                             </ul>
                         </div>
 

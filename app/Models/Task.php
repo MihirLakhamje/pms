@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -17,6 +18,10 @@ class Task extends Model
         'status',
         'priority',
         'due_date',
+    ];
+
+    protected $casts = [
+        'due_date' => 'date',
     ];
 
     // 🔹 Relationships
@@ -50,26 +55,32 @@ class Task extends Model
     {
         return $this->hasMany(Timesheet::class);
     }
-
-    // 🔹 Helpers
-
-    public function isCompleted(): bool
+    public function getTotalDurationAttribute(): string
     {
-        return $this->status === 'completed';
-    }
+        $totalSeconds = 0;
 
-    public function isInProgress(): bool
-    {
-        return $this->status === 'in_progress';
-    }
+        foreach ($this->timesheets()->whereNotNull('end_time')->get() as $timesheet) {
+            $start = Carbon::parse($timesheet->start_time);
+            $end = Carbon::parse($timesheet->end_time);
 
-    public function isPending(): bool
-    {
-        return $this->status === 'todo';
-    }
+            // Always positive — ensures correct order
+            $seconds = abs($end->diffInSeconds($start, false));
 
-    public function isHighPriority(): bool
-    {
-        return $this->priority === 'High';
+            $totalSeconds += $seconds;
+        }
+
+        if ($totalSeconds === 0) {
+            return '—';
+        }
+
+        $days = floor($totalSeconds / 86400);
+        $hours = floor(($totalSeconds % 86400) / 3600);
+        $minutes = floor(($totalSeconds % 3600) / 60);
+
+        if ($days > 0) {
+            return sprintf('%dd %02dh %02dm', $days, $hours, $minutes);
+        }
+
+        return sprintf('%02dh %02dm', $hours, $minutes);
     }
 }

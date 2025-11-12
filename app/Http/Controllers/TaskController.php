@@ -13,14 +13,12 @@ class TaskController extends Controller
     // 🔹 List all tasks (optional: filter by project)
     public function index(Request $request)
     {
-        $query = Task::with(['project', 'assignee'])->latest();
-
-        if ($request->filled('project_id')) {
-            $query->where('project_id', $request->project_id);
-        }
-
-        $tasks = $query->paginate(10);
         $projects = Project::pluck('name', 'id');
+
+        $tasks = Task::with(['project', 'assignee', 'timesheets'])
+            ->when($request->filled('project_id'), fn($q) => $q->where('project_id', $request->project_id))
+            ->latest()
+            ->paginate(10);
 
         return view('tasks.index', compact('tasks', 'projects'));
     }

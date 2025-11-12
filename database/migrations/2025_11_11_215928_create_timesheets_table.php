@@ -18,7 +18,6 @@ return new class extends Migration
             $table->date('date');
             $table->timestamp('start_time');
             $table->timestamp('end_time')->nullable();
-            $table->integer('duration_seconds')->nullable();
             $table->string('note')->nullable();
             $table->boolean('is_running')->default(false);
             $table->timestamps();

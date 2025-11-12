@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 
+// app/Models/Timesheet.php
+// app/Models/Timesheet.php
 class Timesheet extends Model
 {
     use HasFactory;
@@ -16,7 +18,6 @@ class Timesheet extends Model
         'date',
         'start_time',
         'end_time',
-        'duration_seconds',
         'note',
         'is_running',
     ];
@@ -28,8 +29,6 @@ class Timesheet extends Model
         'date' => 'date',
     ];
 
-    // 🔹 Relationships
-
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -38,33 +37,5 @@ class Timesheet extends Model
     public function task()
     {
         return $this->belongsTo(Task::class);
-    }
-
-    // 🔹 Helpers
-
-    public function getDurationInMinutesAttribute(): ?int
-    {
-        return $this->duration_seconds
-            ? floor($this->duration_seconds / 60)
-            : null;
-    }
-
-    public function getFormattedDurationAttribute(): ?string
-    {
-        if (!$this->duration_seconds) return null;
-
-        $hours = floor($this->duration_seconds / 3600);
-        $minutes = floor(($this->duration_seconds % 3600) / 60);
-
-        return sprintf('%02d hr %02d min', $hours, $minutes);
-    }
-
-    // 🔹 Utility (pure calculation, no DB write)
-
-    public function calculateDuration(): ?int
-    {
-        if (!$this->end_time || !$this->start_time) return null;
-
-        return $this->end_time()->diffInSeconds($this->start_time);
     }
 }
