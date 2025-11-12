@@ -14,11 +14,9 @@
             <div class="mb-4">
                 <label class="label-text" for="role">Role</label>
                 <select class="select w-full" id="role" name="role" required>
-                    @foreach (App\Enums\Role::cases() as $role)
-                        <option value="{{ $role->value }}" {{ old('role') === $role->value ? 'selected' : '' }}>
-                            {{ ucfirst($role->value) }}
-                        </option>
-                    @endforeach
+                    <option value="employee">Employee</option>
+                    <option value="manager">Manager</option>
+                    <option value="admin">Admin</option>
                 </select>
             </div>
             <div class="mb-4">

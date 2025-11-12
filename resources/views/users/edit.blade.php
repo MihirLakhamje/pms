@@ -16,11 +16,9 @@
 				<div class="mb-4">
 					<label class="label-text" for="role">Role</label>
 					<select class="select w-full" id="role" name="role">
-                        @foreach (App\Enums\Role::cases() as $role)
-                            <option value="{{ $role->value }}" {{ old('role', $user->role->value) === $role->value ? 'selected' : '' }}>
-                                {{ ucfirst($role->value) }}
-                            </option>
-                        @endforeach
+						<option value="admin" {{ old('role', $user->role) === 'admin' ? 'selected' : '' }}>Admin</option>
+						<option value="manager" {{ old('role', $user->role) === 'manager' ? 'selected' : '' }}>Manager</option>
+						<option value="employee" {{ old('role', $user->role) === 'employee' ? 'selected' : '' }}>Employee</option>
 					</select>
 				</div>
 				<div class="flex justify-end gap-2 mt-6">
