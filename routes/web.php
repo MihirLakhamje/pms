@@ -1,9 +1,14 @@
 <?php
 
+use App\Http\Controllers\AttachmentController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ForgetPasswordController;
+use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\SessionController;
+use App\Http\Controllers\TaskController;
+use App\Http\Controllers\TimesheetController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -29,5 +34,44 @@ Route::middleware(['auth'])->group(function () {
         Route::patch('/{user}', [UserController::class, 'update'])->name('users.update');
         Route::post('/', [UserController::class, 'store'])->name('users.store');
         Route::delete('/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+    });
+
+    Route::prefix('projects')->group(function () {
+        Route::get('/', [ProjectController::class, 'index'])->name('projects.index');
+        Route::get('/create', [ProjectController::class, 'create'])->name('projects.create');
+        Route::post('/', [ProjectController::class, 'store'])->name('projects.store');
+        Route::get('/{project}', [ProjectController::class, 'show'])->name('projects.show');
+        Route::get('/{project}/edit', [ProjectController::class, 'edit'])->name('projects.edit');
+        Route::patch('/{project}', [ProjectController::class, 'update'])->name('projects.update');
+        Route::delete('/{project}', [ProjectController::class, 'destroy'])->name('projects.destroy');
+    });
+
+    Route::prefix('tasks')->group(function () {
+        Route::get('/', [TaskController::class, 'index'])->name('tasks.index');
+        Route::get('/create', [TaskController::class, 'create'])->name('tasks.create');
+        Route::post('/', [TaskController::class, 'store'])->name('tasks.store');
+        Route::get('/{task}', [TaskController::class, 'show'])->name('tasks.show');
+        Route::get('/{task}/edit', [TaskController::class, 'edit'])->name('tasks.edit');
+        Route::patch('/{task}', [TaskController::class, 'update'])->name('tasks.update');
+        Route::delete('/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
+        Route::post('/{task}/toggle-status', [TaskController::class, 'toggleStatus'])->name('tasks.toggleStatus');
+    });
+
+    Route::prefix('comments')->group(function () {
+        Route::post('/', [CommentController::class, 'store'])->name('comments.store');
+        Route::patch('/{comment}', [CommentController::class, 'update'])->name('comments.update');
+        Route::delete('/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+    });
+
+    Route::prefix('attachments')->group(function () {
+        Route::post('/', [AttachmentController::class, 'store'])->name('attachments.store');
+        Route::delete('/{attachment}', [AttachmentController::class, 'destroy'])->name('attachments.destroy');
+    });
+
+    Route::prefix('timesheets')->group(function () {
+        Route::get('/', [TimesheetController::class, 'index'])->name('timesheets.index');
+        Route::post('/start-timer', [TimesheetController::class, 'startTimer'])->name('timesheets.startTimer');
+        Route::post('/stop-timer', [TimesheetController::class, 'stopTimer'])->name('timesheets.stopTimer');
+        Route::delete('/{timesheet}', [TimesheetController::class, 'destroy'])->name('timesheets.destroy');
     });
 });
