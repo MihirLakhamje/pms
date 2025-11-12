@@ -19,7 +19,7 @@ class ProjectController extends Controller
     // 🔹 Show create form
     public function create()
     {
-        $users = User::all();
+        $users = User::whereNotIn('role', ['admin', 'client'])->get();
         return view('projects.create', compact('users'));
     }
 
@@ -58,7 +58,7 @@ class ProjectController extends Controller
     // 🔹 Show edit form
     public function edit(Project $project)
     {
-        $users = User::all();
+        $users = User::whereNotIn('role', ['admin', 'client'])->get();
         $project->load('users');
         return view('projects.edit', compact('project', 'users'));
     }

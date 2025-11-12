@@ -17,6 +17,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @endif
     <script src="//unpkg.com/alpinejs" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/flyonui@latest/dist/js/flyonui.min.js"></script>
 </head>
 
 <body>
@@ -127,6 +128,12 @@
                                     :isActive="request()->routeIs('users.index') || request()->routeIs('users.*')">
                                     <span class="icon-[tabler--users-group] size-4.5"></span>
                                     Users
+                                </x-sidebar-link>
+
+                                <x-sidebar-link href="{{ route('projects.index') }}"
+                                    :isActive="request()->routeIs('projects.index') || request()->routeIs('projects.*')">
+                                    <span class="icon-[tabler--bulb] size-4.5"></span>
+                                    Projects
                                 </x-sidebar-link>
                             </ul>
                         </div>

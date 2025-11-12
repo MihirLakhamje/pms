@@ -16,10 +16,14 @@ class Project extends Model
         'deadline',
     ];
 
+    protected $casts = [
+        'deadline' => 'date',
+    ];
+
     // Many-to-Many with Users (project members)
     public function users()
     {
-        return $this->belongsToMany(User::class, 'project_user')
+        return $this->belongsToMany(User::class, 'project_users')
                     ->withTimestamps();
     }
 
