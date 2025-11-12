@@ -13,6 +13,14 @@ return new class extends Migration
     {
         Schema::create('timesheets', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('task_id')->constrained()->cascadeOnDelete();
+            $table->date('date');
+            $table->timestamp('start_time');
+            $table->timestamp('end_time')->nullable();
+            $table->integer('duration_seconds')->nullable();
+            $table->string('note')->nullable();
+            $table->boolean('is_running')->default(false);
             $table->timestamps();
         });
     }

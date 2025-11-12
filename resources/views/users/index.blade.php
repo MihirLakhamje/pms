@@ -18,14 +18,12 @@
                 <td>{{ ucfirst($user->name) }}</td>
                 <td>{{ $user->email }}</td>
                 <td>
-                    @if ($user->role->value === 'admin')
+                    @if ($user->role === 'admin')
                         <span>Admin</span>
-                    @elseif ($user->role->value === 'manager')
+                    @elseif ($user->role === 'manager')
                         <span>Manager</span>
-                    @elseif ($user->role->value === 'employee')
+                    @elseif ($user->role === 'employee')
                         <span>Employee</span>
-                    @else
-                        <span>{{ ucfirst($user->role->value) }}</span>
                     @endif
                 </td>
                 <td>{{ $user->created_at->format('M d, Y') }}</td>
