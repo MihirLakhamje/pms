@@ -57,25 +57,20 @@ class Task extends Model
     }
     public function getTotalDurationAttribute(): string
     {
-        $totalSeconds = 0;
+        $records = $this->timesheets
+            ->whereNotNull('end_time');
 
-        foreach ($this->timesheets()->whereNotNull('end_time')->get() as $timesheet) {
-            $start = Carbon::parse($timesheet->start_time);
-            $end = Carbon::parse($timesheet->end_time);
-
-            // Always positive — ensures correct order
-            $seconds = abs($end->diffInSeconds($start, false));
-
-            $totalSeconds += $seconds;
-        }
-
-        if ($totalSeconds === 0) {
+        if ($records->isEmpty()) {
             return '—';
         }
 
-        $days = floor($totalSeconds / 86400);
-        $hours = floor(($totalSeconds % 86400) / 3600);
-        $minutes = floor(($totalSeconds % 3600) / 60);
+        $totalSeconds = $records->reduce(function ($carry, $t) {
+            return $carry + Carbon::parse($t->start_time)->diffInSeconds($t->end_time);
+        }, 0);
+
+        $days = intdiv($totalSeconds, 86400);
+        $hours = intdiv($totalSeconds % 86400, 3600);
+        $minutes = intdiv($totalSeconds % 3600, 60);
 
         if ($days > 0) {
             return sprintf('%dd %02dh %02dm', $days, $hours, $minutes);
