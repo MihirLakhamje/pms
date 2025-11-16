@@ -29,6 +29,7 @@
                 <td>{{ $project->users->count() }}</td>
                 <td>
                     <div class="flex gap-4">
+                        <a href="{{ route('projects.show', $project) }}" class="link link-neutral">View</a>
                         <a href="{{ route('projects.edit', $project) }}" class="link link-success" aria-label="Edit">
                             Edit
                         </a>

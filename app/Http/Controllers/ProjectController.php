@@ -51,8 +51,8 @@ class ProjectController extends Controller
     // 🔹 Show project details
     public function show(Project $project)
     {
-        $project->load(['users', 'tasks']);
-        return view('projects.show', compact('project'));
+        $users = $project->users()->paginate(5);
+        return view('projects.show', compact('project', 'users'));
     }
 
     // 🔹 Show edit form

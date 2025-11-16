@@ -56,7 +56,13 @@ class TaskController extends Controller
     // 🔹 Show single task
     public function show(Task $task)
     {
-        $task->load(['project', 'assignee', 'comments.user', 'attachments']);
+        $task->load([
+            'project',
+            'assignee',
+            'comments.user',
+            'attachments',
+            'timesheets' => fn($q) => $q->orderByDesc('start_time'),
+        ]);
         return view('tasks.show', compact('task'));
     }
 

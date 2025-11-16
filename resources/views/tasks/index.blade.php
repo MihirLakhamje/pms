@@ -2,9 +2,10 @@
     <x-slot name="title">Tasks</x-slot>
 
     <div class="flex items-center justify-between mb-4">
+        <a href="{{ route('tasks.create') }}" class="btn btn-primary">Add Task</a>
         <div class="flex gap-3 items-center">
             <form method="GET" class="flex gap-2 items-center">
-                <select name="project_id" class="select select-bordered select-sm">
+                <select name="project_id" class="select select-bordered">
                     <option value="">All Projects</option>
                     @foreach ($projects as $id => $name)
                         <option value="{{ $id }}" {{ request('project_id') == $id ? 'selected' : '' }}>
@@ -12,11 +13,10 @@
                         </option>
                     @endforeach
                 </select>
-                <button class="btn btn-sm btn-primary">Filter</button>
+                <button class="btn btn-primary">Filter</button>
             </form>
         </div>
 
-        <a href="{{ route('tasks.create') }}" class="btn btn-primary btn-sm">Add Task</a>
     </div>
 
     <x-data-table>
@@ -65,6 +65,8 @@
                 {{-- Actions --}}
                 <td>
                     <div class="flex gap-4">
+                        <a href="{{ route('tasks.show', $task) }}" class="link link-neutral">View</a>
+
                         <a href="{{ route('tasks.edit', $task) }}" class="link link-success">Edit</a>
                         <form action="{{ route('tasks.destroy', $task) }}" method="POST"
                             onsubmit="return confirm('Are you sure you want to delete this task?');">
