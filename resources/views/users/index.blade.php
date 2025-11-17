@@ -2,7 +2,9 @@
     <x-slot name="title">People</x-slot>
 
     <div>
-        <a href="{{ route('users.create') }}" class="btn btn-primary mb-4">Add User</a>
+        @can('create', \App\Models\User::class)
+            <a href="{{ route('users.create') }}" class="btn btn-primary mb-4">Add User</a>
+        @endcan
     </div>
 
     <x-data-table>
@@ -11,7 +13,9 @@
             <th>Email</th>
             <th>Role</th>
             <th>Created At</th>
-            <th>Action</th>
+            @can('viewAny', \App\Models\User::class)
+                <th>Action</th>
+            @endcan
         </x-slot>
         @foreach ($users as $user)
             <tr>
@@ -27,20 +31,27 @@
                     @endif
                 </td>
                 <td>{{ $user->created_at->format('M d, Y') }}</td>
-                <td>
-                    <div class="flex gap-4">
-                        <a href="{{ route('users.edit', $user) }}" class="link link-success" aria-label="Edit">
-                            Edit
-                        </a>
-                        <form action="{{ route('users.destroy', $user) }}" method="post">
-                            @csrf
-                            @method('DELETE')
-                            <button class="link link-error" aria-label="Delete">
-                                Delete
-                            </button>
-                        </form>
-                    </div>
-                </td>
+                @can('viewAny', \App\Models\User::class)
+                    <td>
+                        <div class="flex gap-4">
+                            @can('update', $user)
+                                <a href="{{ route('users.edit', $user) }}" class="link link-success" aria-label="Edit">
+                                    Edit
+                                </a>
+                            @endcan
+
+                            @can('delete', $user)
+                                <form action="{{ route('users.destroy', $user) }}" method="post">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="link link-error" aria-label="Delete">
+                                        Delete
+                                    </button>
+                                </form>
+                            @endcan
+                        </div>
+                    </td>
+                @endcan
             </tr>
         @endforeach
     </x-data-table>

@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Timesheet;
 use App\Models\Task;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 
 class TimesheetController extends Controller
@@ -26,6 +28,9 @@ class TimesheetController extends Controller
         $validated = $request->validate([
             'task_id' => 'required|exists:tasks,id',
         ]);
+        $taskId = $validated['task_id'];
+
+        Gate::authorize('create', [Timesheet::class, $taskId]);
 
         $userId = auth()->id();
 
@@ -43,7 +48,7 @@ class TimesheetController extends Controller
                 'user_id' => $userId,
                 'task_id' => $validated['task_id'],
                 'date' => now()->toDateString(),
-                'start_time' => now(),
+                'start_time' => Carbon::parse(now())->timezone(auth()->user()->timezone ?? 'Asia/Kolkata'),
                 'is_running' => true,
             ]);
 
@@ -57,6 +62,7 @@ class TimesheetController extends Controller
     // 🔹 Stop running timer
     public function stopTimer(Request $request)
     {
+        Gate::authorize('update', Timesheet::class);
         $validated = $request->validate([
             'note' => 'nullable|string|max:255',
         ]);
@@ -73,7 +79,7 @@ class TimesheetController extends Controller
                 return back()->with('error', 'No running timer found.');
             }
 
-            $endTime = now();
+            $endTime = Carbon::parse(now())->timezone(auth()->user()->timezone ?? 'Asia/Kolkata');
             $duration = $endTime->diffInSeconds($entry->start_time);
 
             $entry->update([

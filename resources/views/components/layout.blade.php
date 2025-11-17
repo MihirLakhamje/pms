@@ -11,13 +11,14 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
 
-    
+
     <!-- Styles / Scripts -->
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
     @endif
     <script src="//unpkg.com/alpinejs" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/flyonui@latest/dist/js/flyonui.min.js"></script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 
 <body>
@@ -118,7 +119,7 @@
                         </div>
                         <div class="h-full overflow-y-auto">
                             <!-- Menu -->
-                            <ul class="menu menu-sm gap-1 px-4">
+                            <ul class="menu gap-1 px-4">
                                 <x-sidebar-link href="{{ route('dashboard') }}" :isActive="request()->routeIs('dashboard')">
                                     <span class="icon-[tabler--dashboard] size-4.5"></span>
                                     Dashboard

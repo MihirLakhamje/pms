@@ -106,5 +106,6 @@
                 {{ $users->links() }}
             </div>
         </div>
+
     </div>
 </x-layout>

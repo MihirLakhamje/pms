@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 
 class ProjectController extends Controller
@@ -23,9 +24,18 @@ class ProjectController extends Controller
         return view('projects.create', compact('users'));
     }
 
+    public function projectUsers(Project $project)
+    {
+        // dd($project->users()->select('user_id', 'name')->get());
+        return response()->json(
+            $project->users()->select('users.id', 'users.name')->get()
+        );
+    }
+
     // 🔹 Store new project
     public function store(Request $request)
     {
+        Gate::authorize('create', Project::class);
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -35,7 +45,10 @@ class ProjectController extends Controller
         ]);
 
         try {
-            $project = Project::create($validated);
+            $project = new Project($validated);
+
+            $project->created_by = auth()->user()->id;
+            $project->save();
 
             if ($request->has('users')) {
                 $project->users()->sync($request->users);
@@ -44,6 +57,7 @@ class ProjectController extends Controller
             return redirect()->route('projects.index')->with('success', 'Project created successfully.');
         } catch (\Exception $e) {
             Log::error('Project creation failed: ' . $e->getMessage());
+            // dd($e->getMessage());
             return back()->with('error', 'Failed to create project. Please try again.');
         }
     }
@@ -51,14 +65,17 @@ class ProjectController extends Controller
     // 🔹 Show project details
     public function show(Project $project)
     {
+        Gate::authorize('view', $project);
         $users = $project->users()->paginate(5);
-        return view('projects.show', compact('project', 'users'));
+        $tasks = $project->tasks()->paginate(5);
+        return view('projects.show', compact('project', 'users', 'tasks'));
     }
 
     // 🔹 Show edit form
     public function edit(Project $project)
     {
-        $users = User::whereNotIn('role', ['admin', 'client'])->get();
+        Gate::authorize('update', $project);
+        $users = User::whereNotIn('role', ['admin', 'client'], 'id')->get();
         $project->load('users');
         return view('projects.edit', compact('project', 'users'));
     }
@@ -66,6 +83,7 @@ class ProjectController extends Controller
     // 🔹 Update project
     public function update(Request $request, Project $project)
     {
+        Gate::authorize('update', $project);
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -91,6 +109,7 @@ class ProjectController extends Controller
     // 🔹 Delete project
     public function destroy(Project $project)
     {
+        Gate::authorize('delete', $project);
         try {
             $project->delete();
             return redirect()->route('projects.index')->with('success', 'Project deleted successfully.');

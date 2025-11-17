@@ -1,12 +1,73 @@
 <x-layout>
+    <x-slot name="title" class="truncate">[#{{ $task->id }}] {{ $task->title }}</x-slot>
 
     <div class="space-y-6">
 
         <div class="border border-base-content/20 rounded-lg p-6 bg-base-100 space-y-6">
-            <!-- Header -->
-            <div>
-                <h2 class="text-xl font-semibold">{{ $task->title }}</h2>
-            </div>
+            @can('isAssigned', $task)
+                        <div x-data="persistentTimer({
+                    running: {{ $running ? 'true' : 'false' }},
+                    startTime: {{ $running ? "'" . $running->start_time . "'" : 'null' }}
+                })" x-init="init()" class="flex gap-2 items-center">
+
+                            <!-- Start Timer Form -->
+                            <form x-show="!running" method="POST" action="{{ route('timesheets.startTimer') }}">
+                                @csrf
+                                <input type="hidden" name="task_id" value="{{ $task->id }}">
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    Start Timer
+                                </button>
+                            </form>
+
+                            <!-- Stop Timer Form -->
+                            <form x-show="running" method="POST" action="{{ route('timesheets.stopTimer') }}">
+                                @csrf
+                                <button type="submit" class="btn btn-error btn-sm">
+                                    Stop Timer
+                                </button>
+                            </form>
+
+                            <!-- Timer Display -->
+                            <div class="font-semibold">
+                                <span x-text="display"></span>
+                            </div>
+                        </div>
+            @endcan
+
+            <script>
+                function persistentTimer({ running, startTime }) {
+                    return {
+                        running: running,
+                        display: '00:00:00',
+                        startTimestamp: startTime ? new Date(startTime).getTime() : null,
+                        intervalId: null,
+
+                        init() {
+                            if (this.running && this.startTimestamp) {
+                                // Start ticking from DB start time
+                                this.tick();
+                            }
+                        },
+
+                        tick() {
+                            clearInterval(this.intervalId);
+                            this.intervalId = setInterval(() => {
+                                if (!this.startTimestamp) return;
+                                const diff = Math.floor((Date.now() - this.startTimestamp) / 1000);
+                                this.display = this.format(diff);
+                            }, 1000);
+                        },
+
+                        format(seconds) {
+                            const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
+                            const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+                            const s = String(seconds % 60).padStart(2, '0');
+                            return `${h}:${m}:${s}`;
+                        }
+                    }
+                }
+            </script>
+
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -115,15 +176,22 @@
                                 <th>Duration</th>
                             </x-slot>
 
-                            @foreach ($task->timesheets->sortByDesc('start_time') as $t)
+                            @foreach ($timesheets as $t)
                                 <tr>
                                     <td>{{ $t->date->format('d M Y') }}</td>
-                                    <td>{{ $t->start_time }}</td>
-                                    <td>{{ $t->end_time ?? '—' }}</td>
+                                    <td>{{ $t->start_time->format('H:i:s') }}
+                                    </td>
+                                    <td>{{ $t->end_time ? $t->end_time->format('H:i:s') : '—' }}
+                                    </td>
+
                                     <td>{{ $t->duration }}</td>
                                 </tr>
                             @endforeach
                         </x-data-table>
+
+                        <div class="mt-4">
+                            {{ $timesheets->links() }}
+                        </div>
                     </div>
                 </div>
                 <div id="tabs-attachment" class="hidden" role="tabpanel" aria-labelledby="tabs-attachment-item">

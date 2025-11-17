@@ -58,4 +58,15 @@ class Timesheet extends Model
 
         return sprintf('%02dhr %02dmin', $hours, $minutes);
     }
+
+    // Convert start_time to app timezone for display
+    public function getStartTimeLocalAttribute()
+    {
+        return $this->start_time ? $this->start_time->timezone(config('app.timezone')) : null;
+    }
+
+    public function getEndTimeLocalAttribute()
+    {
+        return $this->end_time ? $this->end_time->timezone(config('app.timezone')) : null;
+    }
 }

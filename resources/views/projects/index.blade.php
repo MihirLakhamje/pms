@@ -2,7 +2,9 @@
     <x-slot name="title">Projects</x-slot>
 
     <div>
-        <a href="{{ route('projects.create') }}" class="btn btn-primary mb-4">Add Project</a>
+        @can('create', \App\Models\Project::class)
+            <a href="{{ route('projects.create') }}" class="btn btn-primary mb-4">Add Project</a>
+        @endcan
     </div>
 
     <x-data-table>
@@ -29,17 +31,23 @@
                 <td>{{ $project->users->count() }}</td>
                 <td>
                     <div class="flex gap-4">
-                        <a href="{{ route('projects.show', $project) }}" class="link link-neutral">View</a>
-                        <a href="{{ route('projects.edit', $project) }}" class="link link-success" aria-label="Edit">
-                            Edit
-                        </a>
-                        <form action="{{ route('projects.destroy', $project) }}" method="post">
-                            @csrf
-                            @method('DELETE')
-                            <button class="link link-error" aria-label="Delete">
-                                Delete
-                            </button>
-                        </form>
+                        @can('view', $project)
+                            <a href="{{ route('projects.show', $project) }}" class="link link-neutral">View</a>
+                        @endcan
+                        @can('update', $project)
+                            <a href="{{ route('projects.edit', $project) }}" class="link link-success" aria-label="Edit">
+                                Edit
+                            </a>
+                        @endcan
+                        @can('delete', $project)
+                            <form action="{{ route('projects.destroy', $project) }}" method="post">
+                                @csrf
+                                @method('DELETE')
+                                <button class="link link-error" aria-label="Delete">
+                                    Delete
+                                </button>
+                            </form>
+                        @endcan
                     </div>
                 </td>
             </tr>

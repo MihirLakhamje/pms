@@ -2,10 +2,19 @@
 
 namespace App\Providers;
 
+use App\Models\Project;
+use App\Models\User;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
+    protected $policies = [
+        'App\Models\User' => 'App\Policies\UserPolicy',
+        'App\Models\Project' => 'App\Policies\ProjectPolicy',
+        'App\Models\Task' => 'App\Policies\TaskPolicy',
+    ];
+
     /**
      * Register any application services.
      */
@@ -19,6 +28,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Gate::define('role', function (User $user, array $roles) {
+            return in_array($user->role, $roles);
+        });
     }
 }

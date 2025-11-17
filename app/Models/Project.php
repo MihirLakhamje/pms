@@ -14,6 +14,7 @@ class Project extends Model
         'description',
         'status',
         'deadline',
+        'created_by',
     ];
 
     protected $casts = [
@@ -24,7 +25,7 @@ class Project extends Model
     public function users()
     {
         return $this->belongsToMany(User::class, 'project_users')
-                    ->withTimestamps();
+            ->withTimestamps();
     }
 
     // One-to-Many with Tasks

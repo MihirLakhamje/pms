@@ -2,7 +2,9 @@
     <x-slot name="title">Tasks</x-slot>
 
     <div class="flex items-center justify-between mb-4">
-        <a href="{{ route('tasks.create') }}" class="btn btn-primary">Add Task</a>
+        @can('create', App\Models\Task::class)
+            <a href="{{ route('tasks.create') }}" class="btn btn-primary">Add Task</a>
+        @endcan
         <div class="flex gap-3 items-center">
             <form method="GET" class="flex gap-2 items-center">
                 <select name="project_id" class="select select-bordered">
@@ -40,7 +42,7 @@
                 {{-- Status --}}
                 <td>
                     <span class="font-semibold 
-                                {{ $task->status === 'completed' ? 'text-success' :
+                                    {{ $task->status === 'completed' ? 'text-success' :
             ($task->status === 'in_progress' ? 'text-warning' :
                 ($task->status === 'in_review' ? 'text-info' : 'text-neutral')) }}">
                         {{ ucfirst(str_replace('_', ' ', $task->status)) }}
@@ -50,7 +52,7 @@
                 {{-- Priority --}}
                 <td>
                     <span class="font-semibold 
-                                {{ $task->priority === 'High' ? 'text-error' :
+                                    {{ $task->priority === 'High' ? 'text-error' :
             ($task->priority === 'Medium' ? 'text-warning' : 'text-success') }}">
                         {{ $task->priority }}
                     </span>

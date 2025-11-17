@@ -54,8 +54,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{task}/edit', [TaskController::class, 'edit'])->name('tasks.edit');
         Route::patch('/{task}', [TaskController::class, 'update'])->name('tasks.update');
         Route::delete('/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
-        Route::post('/{task}/toggle-status', [TaskController::class, 'toggleStatus'])->name('tasks.toggleStatus');
+        // Route::post('/{task}/toggle-status', [TaskController::class, 'toggleStatus'])->name('tasks.toggleStatus');
     });
+    Route::get('/projects/{project}/users', [ProjectController::class, 'projectUsers'])
+    ->name('projects.users');
 
     Route::prefix('comments')->group(function () {
         Route::post('/', [CommentController::class, 'store'])->name('comments.store');

@@ -4,15 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use App\Models\Project;
+use App\Models\Timesheet;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 
 class TaskController extends Controller
 {
-    // 🔹 List all tasks (optional: filter by project)
     public function index(Request $request)
     {
+
         $projects = Project::pluck('name', 'id');
 
         $tasks = Task::with(['project', 'assignee', 'timesheets'])
@@ -23,17 +25,20 @@ class TaskController extends Controller
         return view('tasks.index', compact('tasks', 'projects'));
     }
 
-    // 🔹 Show create form
     public function create()
     {
+        Gate::authorize('create', Task::class);
+
         $projects = Project::all();
-        $users = User::all();
+        $users = User::all(); // or scopeVisibleTo() if you want filtering
+
         return view('tasks.create', compact('projects', 'users'));
     }
 
-    // 🔹 Store new task
     public function store(Request $request)
     {
+        Gate::authorize('create', Task::class);
+
         $validated = $request->validate([
             'project_id' => 'required|exists:projects,id',
             'assignee_id' => 'required|exists:users,id',
@@ -44,39 +49,46 @@ class TaskController extends Controller
             'due_date' => 'nullable|date',
         ]);
 
-        try {
-            Task::create($validated);
-            return redirect()->route('tasks.index')->with('success', 'Task created successfully.');
-        } catch (\Exception $e) {
-            Log::error('Task creation failed: ' . $e->getMessage());
-            return back()->with('error', 'Failed to create task. Please try again.');
-        }
+        Task::create($validated);
+
+        return redirect()->route('tasks.index')->with('success', 'Task created successfully.');
     }
 
-    // 🔹 Show single task
     public function show(Task $task)
     {
+        Gate::authorize('view', $task);
+
         $task->load([
             'project',
             'assignee',
             'comments.user',
             'attachments',
-            'timesheets' => fn($q) => $q->orderByDesc('start_time'),
         ]);
-        return view('tasks.show', compact('task'));
+
+        $timesheets = Timesheet::where('task_id', $task->id)->orderByDesc('start_time')->with('user')->paginate(5);
+
+        $running = Timesheet::where('user_id', auth()->id())
+            ->where('task_id', $task->id)
+            ->where('is_running', true)
+            ->first();
+
+        return view('tasks.show', compact('task', 'running', 'timesheets'));
     }
 
-    // 🔹 Show edit form
     public function edit(Task $task)
     {
-        $projects = Project::all();
+        Gate::authorize('update', $task);
+
+        $projects = Project::visibleTo(auth()->user())->get();
         $users = User::all();
+
         return view('tasks.edit', compact('task', 'projects', 'users'));
     }
 
-    // 🔹 Update existing task
     public function update(Request $request, Task $task)
     {
+        Gate::authorize('update', $task);
+
         $validated = $request->validate([
             'project_id' => 'required|exists:projects,id',
             'assignee_id' => 'required|exists:users,id',
@@ -87,43 +99,34 @@ class TaskController extends Controller
             'due_date' => 'nullable|date',
         ]);
 
-        try {
-            $task->update($validated);
-            return redirect()->route('tasks.index')->with('success', 'Task updated successfully.');
-        } catch (\Exception $e) {
-            Log::error('Task update failed: ' . $e->getMessage());
-            return back()->with('error', 'Failed to update task. Please try again.');
-        }
+        $task->update($validated);
+
+        return redirect()->route('tasks.index')->with('success', 'Task updated successfully.');
     }
 
-    // 🔹 Delete task
     public function destroy(Task $task)
     {
-        try {
-            $task->delete();
-            return redirect()->route('tasks.index')->with('success', 'Task deleted successfully.');
-        } catch (\Exception $e) {
-            Log::error('Task deletion failed: ' . $e->getMessage());
-            return back()->with('error', 'Failed to delete task. Please try again.');
-        }
+        Gate::authorize('delete', $task);
+
+        $task->delete();
+
+        return redirect()->route('tasks.index')
+            ->with('success', 'Task deleted successfully.');
     }
 
-    // 🔹 Optional: Quick status toggle (useful for dashboards)
-    public function toggleStatus(Task $task)
-    {
-        try {
-            $task->status = match ($task->status) {
-                'todo' => 'in_progress',
-                'in_progress' => 'in_review',
-                'in_review' => 'completed',
-                default => 'todo',
-            };
-            $task->save();
+    // public function toggleStatus(Task $task)
+    // {
+    //     Gate::authorize('update', $task);
 
-            return back()->with('success', 'Task status updated.');
-        } catch (\Exception $e) {
-            Log::error('Status toggle failed: ' . $e->getMessage());
-            return back()->with('error', 'Failed to change task status.');
-        }
-    }
+    //     $task->status = match ($task->status) {
+    //         'todo' => 'in_progress',
+    //         'in_progress' => 'in_review',
+    //         'in_review' => 'completed',
+    //         default => 'todo',
+    //     };
+
+    //     $task->save();
+
+    //     return back()->with('success', 'Task status updated.');
+    // }
 }
