@@ -1,37 +1,38 @@
 <x-layout>
-    <x-slot name="title" class="truncate">[#{{ $task->id }}] {{ $task->title }}</x-slot>
+    <x-slot name="title" class="truncate">#T-{{ $task->id }} {{ $task->title }}</x-slot>
 
     <div class="space-y-6">
 
         <div class="border border-base-content/20 rounded-lg p-6 bg-base-100 space-y-6">
             @can('isAssigned', $task)
-                        <div x-data="persistentTimer({
-                    running: {{ $running ? 'true' : 'false' }},
-                    startTime: {{ $running ? "'" . $running->start_time . "'" : 'null' }}
-                })" x-init="init()" class="flex gap-2 items-center">
+                <div x-data="persistentTimer({
+                        running: {{ $running ? 'true' : 'false' }},
+                        startTime: {{ $running ? "'" . $running->start_time . "'" : 'null' }}
+                    })" x-init="init()" class="flex gap-2 items-center">
 
-                            <!-- Start Timer Form -->
-                            <form x-show="!running" method="POST" action="{{ route('timesheets.startTimer') }}">
-                                @csrf
-                                <input type="hidden" name="task_id" value="{{ $task->id }}">
-                                <button type="submit" class="btn btn-primary btn-sm">
-                                    Start Timer
-                                </button>
-                            </form>
+                    <!-- Start Timer Form -->
+                    <form x-show="!running" method="POST" action="{{ route('timesheets.startTimer') }}">
+                        @csrf
+                        <input type="hidden" name="task_id" value="{{ $task->id }}">
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            Start Timer
+                        </button>
+                    </form>
 
-                            <!-- Stop Timer Form -->
-                            <form x-show="running" method="POST" action="{{ route('timesheets.stopTimer') }}">
-                                @csrf
-                                <button type="submit" class="btn btn-error btn-sm">
-                                    Stop Timer
-                                </button>
-                            </form>
+                    <!-- Stop Timer Form -->
+                    <form x-show="running" method="POST" action="{{ route('timesheets.stopTimer') }}">
+                        @csrf
+                        <input type="hidden" name="task_id" value="{{ $task->id }}">
+                        <button type="submit" class="btn btn-error btn-sm">
+                            Stop Timer
+                        </button>
+                    </form>
 
-                            <!-- Timer Display -->
-                            <div class="font-semibold">
-                                <span x-text="display"></span>
-                            </div>
-                        </div>
+                    <!-- Timer Display -->
+                    <div class="font-semibold">
+                        <span x-text="display"></span>
+                    </div>
+                </div>
             @endcan
 
             <script>
@@ -157,17 +158,11 @@
                     <span class="icon-[tabler--link] size-5 shrink-0 me-2 hidden sm:block"></span>
                     Attachments
                 </button>
-                <button type="button" class="tab active-tab:tab-active" id="tabs-comment-item" data-tab="#tabs-comment"
-                    aria-controls="tabs-comment" role="tab" aria-selected="false">
-                    <span class="icon-[tabler--message-circle] size-5 shrink-0 me-2 hidden sm:block"></span>
-                    Comments
-                </button>
             </nav>
 
             <div class="mt-3">
                 <div id="tabs-timesheet" role="tabpanel" aria-labelledby="tabs-timesheet-item">
                     <div>
-
                         <x-data-table>
                             <x-slot name="header">
                                 <th>Date</th>
@@ -176,17 +171,23 @@
                                 <th>Duration</th>
                             </x-slot>
 
-                            @foreach ($timesheets as $t)
-                                <tr>
-                                    <td>{{ $t->date->format('d M Y') }}</td>
-                                    <td>{{ $t->start_time->format('H:i:s') }}
-                                    </td>
-                                    <td>{{ $t->end_time ? $t->end_time->format('H:i:s') : '—' }}
-                                    </td>
+                            @forelse ($timesheets as $t)
+                                @can('view', $t)
+                                    <tr>
+                                        <td>{{ $t->date->format('d M Y') }}</td>
+                                        <td>{{ $t->start_time->format('H:i:s') }}
+                                        </td>
+                                        <td>{{ $t->end_time ? $t->end_time->format('H:i:s') : '—' }}
+                                        </td>
 
-                                    <td>{{ $t->duration }}</td>
+                                        <td>{{ $t->duration }}</td>
+                                    </tr>
+                                @endcan
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="italic py-3">No timesheets found.</td>
                                 </tr>
-                            @endforeach
+                            @endforelse
                         </x-data-table>
 
                         <div class="mt-4">
@@ -199,13 +200,6 @@
                         This is your <span class="text-base-content font-semibold">Profile</span> tab, where you can
                         update
                         your personal information and manage your account details.
-                    </p>
-                </div>
-                <div id="tabs-comment" class="hidden" role="tabpanel" aria-labelledby="tabs-comment-item">
-                    <p class="text-base-content/80">
-                        <span class="text-base-content font-semibold">Messages:</span> View your recent messages, chat
-                        with
-                        friends, and manage your conversations.
                     </p>
                 </div>
             </div>

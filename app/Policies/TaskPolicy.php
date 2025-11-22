@@ -75,8 +75,7 @@ class TaskPolicy
                 || $this->isProjectAssigned($user, $task);
         }
 
-        // employee can update their own task (optional)
-        return $this->isTaskAssigned($user, $task);
+        return false;
     }
 
     // --------------------------

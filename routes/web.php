@@ -59,21 +59,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/projects/{project}/users', [ProjectController::class, 'projectUsers'])
     ->name('projects.users');
 
-    Route::prefix('comments')->group(function () {
-        Route::post('/', [CommentController::class, 'store'])->name('comments.store');
-        Route::patch('/{comment}', [CommentController::class, 'update'])->name('comments.update');
-        Route::delete('/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
-    });
-
     Route::prefix('attachments')->group(function () {
         Route::post('/', [AttachmentController::class, 'store'])->name('attachments.store');
         Route::delete('/{attachment}', [AttachmentController::class, 'destroy'])->name('attachments.destroy');
     });
 
     Route::prefix('timesheets')->group(function () {
-        Route::get('/', [TimesheetController::class, 'index'])->name('timesheets.index');
         Route::post('/start-timer', [TimesheetController::class, 'startTimer'])->name('timesheets.startTimer');
         Route::post('/stop-timer', [TimesheetController::class, 'stopTimer'])->name('timesheets.stopTimer');
         Route::delete('/{timesheet}', [TimesheetController::class, 'destroy'])->name('timesheets.destroy');
+        Route::get('/{task}/task-timesheets', [TimesheetController::class, 'showTimesheets'])->name('timesheets.showTimesheets');
     });
 });

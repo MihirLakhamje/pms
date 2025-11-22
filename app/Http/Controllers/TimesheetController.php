@@ -12,14 +12,12 @@ use Illuminate\Support\Facades\Log;
 class TimesheetController extends Controller
 {
     // 🔹 List all timesheet entries for current user
-    public function index()
+    public function showTimesheets(Task $task)
     {
-        $timesheets = Timesheet::with('task.project')
-            ->where('user_id', auth()->id())
-            ->latest('date')
-            ->paginate(10);
+        Gate::authorize('view', Timesheet::class);
+        $timesheets = Timesheet::where('task_id', $task->id)->orderByDesc('start_time')->with('user')->paginate(5);
 
-        return view('timesheets.index', compact('timesheets'));
+        return response()->json($timesheets);
     }
 
     // 🔹 Start timer for a task
@@ -29,8 +27,9 @@ class TimesheetController extends Controller
             'task_id' => 'required|exists:tasks,id',
         ]);
         $taskId = $validated['task_id'];
+        $task = Task::findOrFail($taskId);
 
-        Gate::authorize('create', [Timesheet::class, $taskId]);
+        Gate::authorize('isAssigned', $task);
 
         $userId = auth()->id();
 
@@ -62,10 +61,14 @@ class TimesheetController extends Controller
     // 🔹 Stop running timer
     public function stopTimer(Request $request)
     {
-        Gate::authorize('update', Timesheet::class);
+        
         $validated = $request->validate([
             'note' => 'nullable|string|max:255',
+            'task_id' => 'required|exists:tasks,id',
         ]);
+        $task = Task::findOrFail($validated['task_id']);
+
+        Gate::authorize('isAssigned', $task);
 
         $userId = auth()->id();
 

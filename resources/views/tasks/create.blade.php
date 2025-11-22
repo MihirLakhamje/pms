@@ -2,7 +2,7 @@
     <x-slot name="title">Create Task</x-slot>
 
     <div class="card p-8 max-w-xl mt-6">
-        <h2 class="text-2xl font-semibold mb-6">New Task</h2>
+        
 
         <form method="POST" action="{{ route('tasks.store') }}" class="flex flex-col gap-6">
             @csrf
@@ -10,7 +10,7 @@
             <div x-data="assignUser()" x-init="init()" class="space-y-4">
                 <!-- Project Select -->
                 <select id="project_id" name="project_id" x-model="projectId" @@change="loadUsers"
-                    class="border p-2 w-full select select-bordered">
+                    class="border w-full select select-bordered">
                     <option value="">Select Project</option>
                     @foreach ($projects as $project)
                         <option value="{{ $project->id }}">{{ $project->name }}</option>
@@ -18,7 +18,7 @@
                 </select>
 
                 <!-- Assigned To Select -->
-                <select id="assigned_to" name="assignee_id" class="border p-2 w-full select select-bordered">
+                <select id="assigned_to" name="assignee_id" class="border w-full select select-bordered">
                     <template x-for="user in users" :key="user.id">
                         <option :value="user.id" x-text="user.name.replace(/\b\w/g, c => c.toUpperCase())"></option>
                     </template>

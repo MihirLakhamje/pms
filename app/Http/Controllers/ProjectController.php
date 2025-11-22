@@ -75,7 +75,7 @@ class ProjectController extends Controller
     public function edit(Project $project)
     {
         Gate::authorize('update', $project);
-        $users = User::whereNotIn('role', ['admin', 'client'], 'id')->get();
+        $users = User::whereNotIn('role', ['admin'])->get();
         $project->load('users');
         return view('projects.edit', compact('project', 'users'));
     }

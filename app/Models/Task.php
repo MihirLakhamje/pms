@@ -38,12 +38,6 @@ class Task extends Model
         return $this->belongsTo(User::class, 'assignee_id');
     }
 
-    // Each task can have many comments
-    public function comments()
-    {
-        return $this->hasMany(Comment::class);
-    }
-
     // Each task can have many attachments
     public function attachments()
     {

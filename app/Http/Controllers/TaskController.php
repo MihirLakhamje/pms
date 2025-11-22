@@ -22,7 +22,9 @@ class TaskController extends Controller
             ->latest()
             ->paginate(10);
 
-        return view('tasks.index', compact('tasks', 'projects'));
+        $view = $request->get('task-view', 'kanban'); // default kanban
+
+        return view('tasks.index', compact('tasks', 'projects', 'view'));
     }
 
     public function create()
@@ -61,7 +63,6 @@ class TaskController extends Controller
         $task->load([
             'project',
             'assignee',
-            'comments.user',
             'attachments',
         ]);
 
@@ -79,7 +80,7 @@ class TaskController extends Controller
     {
         Gate::authorize('update', $task);
 
-        $projects = Project::visibleTo(auth()->user())->get();
+        $projects = Project::all();
         $users = User::all();
 
         return view('tasks.edit', compact('task', 'projects', 'users'));

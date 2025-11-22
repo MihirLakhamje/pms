@@ -2,65 +2,33 @@
     <x-slot name="title">Edit Task</x-slot>
 
     <div class="card p-8 max-w-xl mt-6">
-        <h2 class="text-2xl font-semibold mb-6">Edit Task</h2>
 
         <form method="POST" action="{{ route('tasks.update', $task->id) }}" class="flex flex-col gap-6">
             @csrf
             @method('PATCH')
 
-            {{-- Project --}}
-            <div>
-                <label for="project_id" class="label-text font-medium">Project <span class="text-error">*</span></label>
-                <div class="max-w-full">
-                    <select id="project_id" name="project_id" data-select='{
-                            "placeholder": "Select project",
-                            "toggleTag": "<button type=\"button\" aria-expanded=\"false\"></button>",
-                            "toggleClasses": "advance-select-toggle select-disabled:pointer-events-none select-disabled:opacity-40",
-                            "hasSearch": true,
-                            "dropdownClasses": "advance-select-menu max-h-52 pt-0 overflow-y-auto",
-                            "optionClasses": "advance-select-option selected:select-active",
-                            "optionTemplate": "<div class=\"flex justify-between items-center w-full\"><span data-title></span><span class=\"icon-[tabler--check] shrink-0 size-4 text-primary hidden selected:block\"></span></div>",
-                            "extraMarkup": "<span class=\"icon-[tabler--caret-up-down] shrink-0 size-4 text-base-content absolute top-1/2 end-3 -translate-y-1/2\"></span>"
-                        }' class="hidden" required>
-                        <option value="">Select Project</option>
-                        @foreach($projects as $project)
-                            <option value="{{ $project->id }}" {{ (old('project_id', $task->project_id) == $project->id) ? 'selected' : '' }}>
-                                {{ $project->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                @error('project_id')
-                    <span class="text-error text-sm">{{ $message }}</span>
-                @enderror
-            </div>
+            <div x-data="assignUser()"
+                x-init="projectId='{{ old('project_id', $task->project_id ?? '') }}'; await loadUsers(); users = users.map(u => ({...u}));"
+                class="space-y-2">
 
-            {{-- Assignee --}}
-            <div>
-                <label for="assignee_id" class="label-text font-medium">Assign To <span
-                        class="text-error">*</span></label>
-                <div class="max-w-full">
-                    <select id="assignee_id" name="assignee_id" data-select='{
-                            "placeholder": "Select assignee",
-                            "toggleTag": "<button type=\"button\" aria-expanded=\"false\"></button>",
-                            "toggleClasses": "advance-select-toggle select-disabled:pointer-events-none select-disabled:opacity-40",
-                            "hasSearch": true,
-                            "dropdownClasses": "advance-select-menu max-h-52 pt-0 overflow-y-auto",
-                            "optionClasses": "advance-select-option selected:select-active",
-                            "optionTemplate": "<div class=\"flex justify-between items-center w-full\"><span data-title></span><span class=\"icon-[tabler--check] shrink-0 size-4 text-primary hidden selected:block\"></span></div>",
-                            "extraMarkup": "<span class=\"icon-[tabler--caret-up-down] shrink-0 size-4 text-base-content absolute top-1/2 end-3 -translate-y-1/2\"></span>"
-                        }' class="hidden" required>
-                        <option value="">Select Assignee</option>
-                        @foreach($users as $user)
-                            <option value="{{ $user->id }}" {{ (old('assignee_id', $task->assignee_id) == $user->id) ? 'selected' : '' }}>
-                                {{ $user->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                @error('assignee_id')
-                    <span class="text-error text-sm">{{ $message }}</span>
-                @enderror
+                <!-- Project Select -->
+                <select id="project_id" name="project_id" x-model="projectId" @@change="loadUsers"
+                    class="border w-full select select-bordered">
+                    <option value="">Select Project</option>
+                    @foreach ($projects as $project)
+                        <option value="{{ $project->id }}">{{ $project->name }}</option>
+                    @endforeach
+                </select>
+
+                <!-- Assigned To Select -->
+                <select id="assigned_to" name="assignee_id" x-model="assigneeId"
+                    class="border w-full select select-bordered">
+                    <template x-for="user in users" :key="user.id">
+                        <option :value="user.id" x-text="user.name.replace(/\b\w/g, c => c.toUpperCase())"
+                            :selected="user.id == {{ old('assignee_id', $task->assignee_id ?? 'null') }}"></option>
+                    </template>
+                    <option x-show="users.length === 0">No users for this project</option>
+                </select>
             </div>
 
             {{-- Title --}}
@@ -139,3 +107,35 @@
         </form>
     </div>
 </x-layout>
+
+<script>
+    function assignUser() {
+        return {
+            projectId: '',
+            assigneeId: '{{ old('assignee_id', $task->assignee_id ?? '') }}',
+            users: [],
+
+            async loadUsers() {
+                if (!this.projectId) {
+                    this.users = [];
+                    this.assigneeId = '';
+                    return;
+                }
+
+                try {
+                    let res = await fetch(`/projects/${this.projectId}/users`);
+                    this.users = await res.json();
+
+                    // Ensure assigneeId is valid
+                    if (!this.users.some(u => u.id == this.assigneeId)) {
+                        this.assigneeId = '';
+                    }
+                } catch (e) {
+                    console.error("Failed to load users:", e);
+                    this.users = [];
+                    this.assigneeId = '';
+                }
+            }
+        }
+    }
+</script>

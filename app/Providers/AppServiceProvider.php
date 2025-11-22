@@ -13,6 +13,7 @@ class AppServiceProvider extends ServiceProvider
         'App\Models\User' => 'App\Policies\UserPolicy',
         'App\Models\Project' => 'App\Policies\ProjectPolicy',
         'App\Models\Task' => 'App\Policies\TaskPolicy',
+        'App\Models\Timesheet' => 'App\Policies\TimesheetPolicy',
     ];
 
     /**
