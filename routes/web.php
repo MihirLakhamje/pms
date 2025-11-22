@@ -59,10 +59,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/projects/{project}/users', [ProjectController::class, 'projectUsers'])
     ->name('projects.users');
 
-    Route::prefix('attachments')->group(function () {
-        Route::post('/', [AttachmentController::class, 'store'])->name('attachments.store');
-        Route::delete('/{attachment}', [AttachmentController::class, 'destroy'])->name('attachments.destroy');
-    });
 
     Route::prefix('timesheets')->group(function () {
         Route::post('/start-timer', [TimesheetController::class, 'startTimer'])->name('timesheets.startTimer');

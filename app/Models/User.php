@@ -49,12 +49,6 @@ class User extends Authenticatable
         ];
     }
 
-    // 🔹 Relations
-    public function comments()
-    {
-        return $this->hasMany(Comment::class);
-    }
-
     public function tasks()
     {
         return $this->hasMany(Task::class, 'assignee_id');
@@ -70,10 +64,4 @@ class User extends Authenticatable
         return $this->belongsToMany(Project::class, 'project_users')
                     ->withTimestamps();
     }
-
-    public function attachments()
-    {
-        return $this->hasMany(Attachment::class);
-    }
-
 }

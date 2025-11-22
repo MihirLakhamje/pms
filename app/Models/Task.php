@@ -38,12 +38,6 @@ class Task extends Model
         return $this->belongsTo(User::class, 'assignee_id');
     }
 
-    // Each task can have many attachments
-    public function attachments()
-    {
-        return $this->hasMany(Attachment::class);
-    }
-
     // Each task can have many timesheet entries
     public function timesheets()
     {
