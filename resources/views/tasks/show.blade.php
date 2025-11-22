@@ -6,9 +6,9 @@
         <div class="border border-base-content/20 rounded-lg p-6 bg-base-100 space-y-6">
             @can('isAssigned', $task)
                 <div x-data="persistentTimer({
-                        running: {{ $running ? 'true' : 'false' }},
-                        startTime: {{ $running ? "'" . $running->start_time . "'" : 'null' }}
-                    })" x-init="init()" class="flex gap-2 items-center">
+                            running: {{ $running ? 'true' : 'false' }},
+                            startTime: {{ $running ? "'" . $running->start_time . "'" : 'null' }}
+                        })" x-init="init()" class="flex gap-2 items-center">
 
                     <!-- Start Timer Form -->
                     <form x-show="!running" method="POST" action="{{ route('timesheets.startTimer') }}">
@@ -145,62 +145,37 @@
 
         {{-- BOTTOM SECTION — Tabs --}}
         <div class="border border-base-content/20 rounded-lg p-6 bg-base-100">
+            <div>
+                <h3 class="text-xl font-semibold mb-4">Timesheets</h3>
+                <x-data-table>
+                    <x-slot name="header">
+                        <th>Date</th>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Duration</th>
+                    </x-slot>
 
-            <nav class="tabs tabs-lifted tabs-sm justify-center sm:justify-start sm:tabs-md" aria-label="Tabs"
-                role="tablist" aria-orientation="horizontal">
-                <button type="button" class="tab active-tab:tab-active active" id="tabs-timesheet-item"
-                    data-tab="#tabs-timesheet" aria-controls="tabs-timesheet" role="tab" aria-selected="true">
-                    <span class="icon-[tabler--clock] size-5 shrink-0 me-2 hidden sm:block"></span>
-                    Timesheet
-                </button>
-                <button type="button" class="tab active-tab:tab-active" id="tabs-attachment-item"
-                    data-tab="#tabs-attachment" aria-controls="tabs-attachment" role="tab" aria-selected="false">
-                    <span class="icon-[tabler--link] size-5 shrink-0 me-2 hidden sm:block"></span>
-                    Attachments
-                </button>
-            </nav>
+                    @forelse ($timesheets as $t)
+                        @can('view', $t)
+                            <tr>
+                                <td>{{ $t->date->format('d M Y') }}</td>
+                                <td>{{ $t->start_time->format('H:i:s') }}
+                                </td>
+                                <td>{{ $t->end_time ? $t->end_time->format('H:i:s') : '—' }}
+                                </td>
 
-            <div class="mt-3">
-                <div id="tabs-timesheet" role="tabpanel" aria-labelledby="tabs-timesheet-item">
-                    <div>
-                        <x-data-table>
-                            <x-slot name="header">
-                                <th>Date</th>
-                                <th>Start</th>
-                                <th>End</th>
-                                <th>Duration</th>
-                            </x-slot>
+                                <td>{{ $t->duration }}</td>
+                            </tr>
+                        @endcan
+                    @empty
+                        <tr>
+                            <td colspan="4" class="italic py-3">No timesheets found.</td>
+                        </tr>
+                    @endforelse
+                </x-data-table>
 
-                            @forelse ($timesheets as $t)
-                                @can('view', $t)
-                                    <tr>
-                                        <td>{{ $t->date->format('d M Y') }}</td>
-                                        <td>{{ $t->start_time->format('H:i:s') }}
-                                        </td>
-                                        <td>{{ $t->end_time ? $t->end_time->format('H:i:s') : '—' }}
-                                        </td>
-
-                                        <td>{{ $t->duration }}</td>
-                                    </tr>
-                                @endcan
-                            @empty
-                                <tr>
-                                    <td colspan="4" class="italic py-3">No timesheets found.</td>
-                                </tr>
-                            @endforelse
-                        </x-data-table>
-
-                        <div class="mt-4">
-                            {{ $timesheets->links() }}
-                        </div>
-                    </div>
-                </div>
-                <div id="tabs-attachment" class="hidden" role="tabpanel" aria-labelledby="tabs-attachment-item">
-                    <p class="text-base-content/80">
-                        This is your <span class="text-base-content font-semibold">Profile</span> tab, where you can
-                        update
-                        your personal information and manage your account details.
-                    </p>
+                <div class="mt-4">
+                    {{ $timesheets->links() }}
                 </div>
             </div>
         </div>

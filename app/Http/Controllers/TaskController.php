@@ -63,7 +63,6 @@ class TaskController extends Controller
         $task->load([
             'project',
             'assignee',
-            'attachments',
         ]);
 
         $timesheets = Timesheet::where('task_id', $task->id)->orderByDesc('start_time')->with('user')->paginate(5);
