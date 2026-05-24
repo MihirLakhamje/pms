@@ -30,7 +30,6 @@ class TaskController extends Controller
     public function create()
     {
         Gate::authorize('create', Task::class);
-
         $projects = Project::all();
         $users = User::all(); // or scopeVisibleTo() if you want filtering
 
@@ -39,7 +38,6 @@ class TaskController extends Controller
 
     public function store(Request $request)
     {
-        Gate::authorize('create', Task::class);
 
         $validated = $request->validate([
             'project_id' => 'required|exists:projects,id',
@@ -50,6 +48,10 @@ class TaskController extends Controller
             'priority' => 'required|in:Low,Medium,High',
             'due_date' => 'nullable|date',
         ]);
+
+        $project = Project::findOrFail($validated['project_id']);
+
+        Gate::authorize('store', [Task::class, $project]);
 
         Task::create($validated);
 
@@ -63,6 +65,8 @@ class TaskController extends Controller
         $task->load([
             'project',
             'assignee',
+            'timesheets',
+            'reviews.user',
         ]);
 
         $timesheets = Timesheet::where('task_id', $task->id)->orderByDesc('start_time')->with('user')->paginate(5);
