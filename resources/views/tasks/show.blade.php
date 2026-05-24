@@ -6,9 +6,9 @@
         <div class="border border-base-content/20 rounded-lg p-6 bg-base-100 space-y-6">
             @can('isAssigned', $task)
                 <div x-data="persistentTimer({
-                            running: {{ $running ? 'true' : 'false' }},
-                            startTime: {{ $running ? "'" . $running->start_time . "'" : 'null' }}
-                        })" x-init="init()" class="flex gap-2 items-center">
+                                        running: {{ $running ? 'true' : 'false' }},
+                                        startTime: {{ $running ? "'" . $running->start_time . "'" : 'null' }}
+                                    })" x-init="init()" class="flex gap-2 items-center">
 
                     <!-- Start Timer Form -->
                     <form x-show="!running" method="POST" action="{{ route('timesheets.startTimer') }}">
@@ -144,38 +144,97 @@
         </div>
 
         {{-- BOTTOM SECTION — Tabs --}}
-        <div class="border border-base-content/20 rounded-lg p-6 bg-base-100">
-            <div>
-                <h3 class="text-xl font-semibold mb-4">Timesheets</h3>
-                <x-data-table>
-                    <x-slot name="header">
-                        <th>Date</th>
-                        <th>Start</th>
-                        <th>End</th>
-                        <th>Duration</th>
-                    </x-slot>
+        <div class="flex gap-6 flex-wrap">
+            <div class="border border-base-content/20 rounded-lg p-6 bg-base-100 flex-1 h-full min-h-0">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold">Timesheets</h3>
+                        <p class="text-sm text-base-content/60">{{ $task->total_duration }}</p>
+                    </div>
+                    <x-data-table>
+                        <x-slot name="header">
+                            <th>Date</th>
+                            <th>Start</th>
+                            <th>End</th>
+                            <th>Duration</th>
+                        </x-slot>
 
-                    @forelse ($timesheets as $t)
-                        @can('view', $t)
+                        @forelse ($timesheets as $t)
+                            @can('view', $t)
+                                <tr>
+                                    <td>{{ $t->date->format('d M Y') }}</td>
+                                    <td>{{ $t->start_time->format('H:i:s A') }}
+                                    </td>
+                                    <td>{{ $t->end_time ? $t->end_time->format('H:i:s A') : '-' }}
+                                    </td>
+
+                                    <td>{{ $t->duration }}</td>
+                                </tr>
+                            @endcan
+                        @empty
                             <tr>
-                                <td>{{ $t->date->format('d M Y') }}</td>
-                                <td>{{ $t->start_time->format('H:i:s') }}
-                                </td>
-                                <td>{{ $t->end_time ? $t->end_time->format('H:i:s') : '—' }}
-                                </td>
-
-                                <td>{{ $t->duration }}</td>
+                                <td colspan="4" class="italic py-3">No timesheets found.</td>
                             </tr>
-                        @endcan
-                    @empty
-                        <tr>
-                            <td colspan="4" class="italic py-3">No timesheets found.</td>
-                        </tr>
-                    @endforelse
-                </x-data-table>
+                        @endforelse
+                    </x-data-table>
 
-                <div class="mt-4">
-                    {{ $timesheets->links() }}
+                    <div class="mx-4">
+                        {{ $timesheets->links() }}
+                    </div>
+
+
+                </div>
+            </div>
+
+            <div class="border border-base-content/20 rounded-lg p-6 bg-base-100 flex-1 h-full min-h-0">
+                <div>
+                    <h3 class="text-xl font-semibold mb-4">Comments</h3>
+
+                    @can('create', App\Models\TaskReview::class)
+                        <form action="{{ route('task-reviews.store') }}" method="POST" class="mb-6">
+                            @csrf
+
+                            <input type="hidden" name="task_id" value="{{ $task->id }}">
+
+                            <textarea name="content" class="textarea textarea-bordered w-full"
+                                placeholder="Write comment..."></textarea>
+
+                            <button class="btn btn-primary mt-3">
+                                Add Comment
+                            </button>
+                        </form>
+                    @endcan
+
+                    <div class="space-y-4">
+                        @foreach ($task->reviews()->latest()->get() as $review)
+                            <div class="border border-base-300 rounded-lg p-4">
+                                <div class="flex justify-between items-center mb-2">
+                                    <div>
+                                        <p class="font-semibold">
+                                            {{ $review->user->name }}
+                                        </p>
+
+                                        <p class="text-xs text-base-content/60">
+                                            {{ $review->created_at->diffForHumans() }}
+                                        </p>
+                                    </div>
+
+                                    @can('delete', $review)
+                                        <form action="{{ route('task-reviews.destroy', $review) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+
+                                            <button class="btn btn-error btn-xs">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    @endcan
+                                </div>
+
+                                <p>{{ $review->content }}</p>
+                            </div>
+                        @endforeach
+                    </div>
                 </div>
             </div>
         </div>
