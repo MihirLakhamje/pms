@@ -86,4 +86,9 @@ class Task extends Model
 
         return sprintf('%02dh %02dm', $hours, $minutes);
     }
+
+    public function reviews()
+    {
+        return $this->hasMany(TaskReview::class);
+    }
 }
