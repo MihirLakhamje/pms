@@ -10,15 +10,12 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('timesheets', function (Blueprint $table) {
+        Schema::create('attachments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('task_id')->constrained()->cascadeOnDelete();
-            $table->date('date');
-            $table->timestamp('start_time');
-            $table->timestamp('end_time')->nullable();
-            $table->string('note')->nullable();
-            $table->boolean('is_running')->default(false);
+            $table->foreignId('uploaded_by')->constrained('users')->cascadeOnDelete();
+            $table->string('file_path');
+            $table->string('file_name');
             $table->timestamps();
         });
     }
@@ -28,6 +25,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('timesheets');
+        Schema::dropIfExists('attachments');
     }
 };
