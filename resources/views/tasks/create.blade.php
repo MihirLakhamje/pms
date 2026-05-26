@@ -1,18 +1,18 @@
 <x-layout>
     <x-slot name="title">Create Task</x-slot>
 
-    <div class="card p-8 w-full mt-6">
-        <form method="POST" action="{{ route('tasks.store') }}" class="flex flex-col gap-6">
+    <div class="card p-8 w-full mt-5">
+        <form method="POST" action="{{ route('tasks.store') }}" class="flex flex-col gap-6" enctype="multipart/form-data">
             @csrf
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label for="project_id" class="label-text font-medium">Project <span
                             class="text-error">*</span></label>
-                    <div x-data="assignUser()" x-init="init()" class="flex gap-5">
+                    <div x-data="assignUser()" x-init="init()" class="flex gap-5 flex-wrap md:flex-nowrap">
                         <!-- Project Select -->
-                        <select id="project_id" name="project_id" x-model="projectId" @@change="loadUsers"
-                            class="border w-full select select-bordered">
+                        <select id="project_id" name="project_id" x-model="projectId"
+                            @@change="loadUsers" class="border w-full select select-bordered">
                             <option value="">Select Project</option>
                             @foreach ($projects as $project)
                                 <option value="{{ $project->id }}">{{ $project->name }}</option>
@@ -22,7 +22,8 @@
                         <!-- Assigned To Select -->
                         <select id="assigned_to" name="assignee_id" class="border w-full select select-bordered">
                             <template x-for="user in users" :key="user.id">
-                                <option :value="user.id" x-text="user.name.replace(/\b\w/g, c => c.toUpperCase())">
+                                <option :value="user.id"
+                                    x-text="user.name.replace(/\b\w/g, c => c.toUpperCase())">
                                 </option>
                             </template>
 
@@ -45,15 +46,18 @@
 
                 {{-- Status --}}
                 <div>
-                    <label for="status" class="label-text font-medium">Status <span class="text-error">*</span></label>
+                    <label for="status" class="label-text font-medium">Status <span
+                            class="text-error">*</span></label>
                     <select id="status" name="status" class="select w-full @error('status') select-error @enderror"
                         required>
                         <option value="">Select status</option>
                         <option value="todo" {{ old('status') == 'todo' ? 'selected' : '' }}>To Do</option>
                         <option value="in_progress" {{ old('status') == 'in_progress' ? 'selected' : '' }}>In Progress
                         </option>
-                        <option value="in_review" {{ old('status') == 'in_review' ? 'selected' : '' }}>In Review</option>
-                        <option value="completed" {{ old('status') == 'completed' ? 'selected' : '' }}>Completed</option>
+                        <option value="in_review" {{ old('status') == 'in_review' ? 'selected' : '' }}>In Review
+                        </option>
+                        <option value="completed" {{ old('status') == 'completed' ? 'selected' : '' }}>Completed
+                        </option>
                     </select>
                     @error('status')
                         <span class="text-error text-sm">{{ $message }}</span>
@@ -86,6 +90,19 @@
                     @enderror
                 </div>
 
+                {{-- Attachments --}}
+                <div>
+                    <label class="label-text font-medium">
+                        Attachments (optional)
+                    </label>
+
+                    <input type="file" name="attachments[]" multiple class="input w-full" aria-label="file-input" />
+
+                    <p class="text-xs text-base-content/60 mt-1">
+                        You can upload multiple files.
+                    </p>
+                </div>  
+
                 {{-- Description --}}
                 <div>
                     <label for="description" class="label-text font-medium">Description (optional)</label>
@@ -96,6 +113,7 @@
                         <span class="text-error text-sm">{{ $message }}</span>
                     @enderror
                 </div>
+
             </div>
 
             {{-- Buttons --}}

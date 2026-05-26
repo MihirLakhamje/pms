@@ -3,7 +3,8 @@
 
     <div class="card p-8 w-full mt-6">
 
-        <form method="POST" action="{{ route('tasks.update', $task->id) }}" class="flex flex-col gap-6">
+        <form method="POST" action="{{ route('tasks.update', $task->id) }}" class="flex flex-col gap-6"
+            enctype="multipart/form-data">
             @csrf
             @method('PATCH')
 
@@ -11,13 +12,13 @@
                 <div>
                     <label for="project_id" class="label-text font-medium">Project <span
                             class="text-error">*</span></label>
-                    <div x-data="assignUser()"
-                        x-init="projectId='{{ old('project_id', $task->project_id ?? '') }}'; await loadUsers(); users = users.map(u => ({...u}));"
-                        class="flex gap-5">
+                    <div x-data="assignUser()" x-init="projectId = '{{ old('project_id', $task->project_id ?? '') }}';
+                    await loadUsers();
+                    users = users.map(u => ({ ...u }));" class="flex gap-5">
 
                         <!-- Project Select -->
-                        <select id="project_id" name="project_id" x-model="projectId" @@change="loadUsers"
-                            class="border w-full select select-bordered">
+                        <select id="project_id" name="project_id" x-model="projectId"
+                            @@change="loadUsers" class="border w-full select select-bordered">
                             <option value="">Select Project</option>
                             @foreach ($projects as $project)
                                 <option value="{{ $project->id }}">{{ $project->name }}</option>
@@ -51,12 +52,15 @@
 
                 {{-- Status --}}
                 <div>
-                    <label for="status" class="label-text font-medium">Status <span class="text-error">*</span></label>
+                    <label for="status" class="label-text font-medium">Status <span
+                            class="text-error">*</span></label>
                     <select id="status" name="status" class="select w-full @error('status') select-error @enderror"
                         required>
                         <option value="">Select status</option>
-                        <option value="todo" {{ old('status', $task->status) == 'todo' ? 'selected' : '' }}>To Do</option>
-                        <option value="in_progress" {{ old('status', $task->status) == 'in_progress' ? 'selected' : '' }}>
+                        <option value="todo" {{ old('status', $task->status) == 'todo' ? 'selected' : '' }}>To Do
+                        </option>
+                        <option value="in_progress"
+                            {{ old('status', $task->status) == 'in_progress' ? 'selected' : '' }}>
                             In
                             Progress</option>
                         <option value="in_review" {{ old('status', $task->status) == 'in_review' ? 'selected' : '' }}>In
@@ -76,8 +80,10 @@
                     <select id="priority" name="priority"
                         class="select w-full @error('priority') select-error @enderror" required>
                         <option value="">Select priority</option>
-                        <option value="Low" {{ old('priority', $task->priority) == 'Low' ? 'selected' : '' }}>Low</option>
-                        <option value="Medium" {{ old('priority', $task->priority) == 'Medium' ? 'selected' : '' }}>Medium
+                        <option value="Low" {{ old('priority', $task->priority) == 'Low' ? 'selected' : '' }}>Low
+                        </option>
+                        <option value="Medium" {{ old('priority', $task->priority) == 'Medium' ? 'selected' : '' }}>
+                            Medium
                         </option>
                         <option value="High" {{ old('priority', $task->priority) == 'High' ? 'selected' : '' }}>High
                         </option>
@@ -98,6 +104,19 @@
                     @enderror
                 </div>
 
+                {{-- Attachments --}}
+                <div>
+                    <label for="attachments" class="label-text font-medium">Attachments (optional)</label>
+                    <input multiple type="file" id="attachments" name="attachments[]"
+                        value="{{ old('attachments', $task->attachments) }}"
+                        class="input w-full @error('attachments') input-error @enderror" />
+                    @error('attachments')
+                        <span class="text-error text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
+
+
+
                 {{-- Description --}}
                 <div>
                     <label for="description" class="label-text font-medium">Description (optional)</label>
@@ -108,6 +127,35 @@
                         <span class="text-error text-sm">{{ $message }}</span>
                     @enderror
                 </div>
+
+                {{-- Existing Attachments --}}
+                @if ($task->attachments->count())
+
+                    <div>
+                        <div class="label-text font-medium">Existing Attachments</div>
+
+                        <div class="flex gap-4 overflow-x-auto pb-2">
+
+                            @foreach ($task->attachments as $attachment)
+                                <a href="{{ $attachment->temporary_url }}" target="_blank"
+                                    class="min-w-[140px] max-w-[140px] border rounded-xl p-4 hover:bg-base-200 transition flex flex-col items-center text-center shrink-0">
+
+                                    {{-- File Icon --}}
+                                    <div class="text-5xl mb-3">
+                                        📄
+                                    </div>
+
+                                    {{-- File Name --}}
+                                    <p class="text-sm font-medium truncate w-full">
+                                        {{ \Illuminate\Support\Str::limit($attachment->file_name, 18) }}
+                                    </p>
+                                </a>
+                            @endforeach
+
+                        </div>
+                    </div>
+
+                @endif
             </div>
 
             {{-- Buttons --}}

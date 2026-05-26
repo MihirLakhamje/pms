@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Task;
 use App\Models\Project;
+use App\Models\Task;
 use App\Models\Timesheet;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class TaskController extends Controller
 {
@@ -18,7 +18,7 @@ class TaskController extends Controller
         $projects = Project::pluck('name', 'id');
 
         $tasks = Task::with(['project', 'assignee', 'timesheets'])
-            ->when($request->filled('project_id'), fn($q) => $q->where('project_id', $request->project_id))
+            ->when($request->filled('project_id'), fn ($q) => $q->where('project_id', $request->project_id))
             ->latest()
             ->paginate(10);
 
@@ -47,13 +47,27 @@ class TaskController extends Controller
             'status' => 'required|in:todo,in_progress,in_review,completed',
             'priority' => 'required|in:Low,Medium,High',
             'due_date' => 'nullable|date',
+            'attachments.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:10240',
         ]);
 
         $project = Project::findOrFail($validated['project_id']);
 
         Gate::authorize('store', [Task::class, $project]);
 
-        Task::create($validated);
+        $task = Task::create($validated);
+
+        if ($request->hasFile('attachments')) {
+
+            foreach ($request->file('attachments') as $file) {
+                $path = $file->store('attachments', 'backblaze');
+
+                $task->attachments()->create([
+                    'uploaded_by' => auth()->id(),
+                    'file_path' => $path,
+                    'file_name' => $file->getClientOriginalName(),
+                ]);
+            }
+        }
 
         return redirect()->route('tasks.index')->with('success', 'Task created successfully.');
     }
@@ -76,6 +90,17 @@ class TaskController extends Controller
             ->where('is_running', true)
             ->first();
 
+        $task->load('attachments.user');
+
+        foreach ($task->attachments as $attachment) {
+
+            $attachment->temporary_url =
+                Storage::disk('backblaze')->temporaryUrl(
+                    $attachment->file_path,
+                    now()->addMinutes(10)
+                );
+        }
+
         return view('tasks.show', compact('task', 'running', 'timesheets'));
     }
 
@@ -85,6 +110,17 @@ class TaskController extends Controller
 
         $projects = Project::all();
         $users = User::all();
+
+        $task->load('attachments.user');
+
+        foreach ($task->attachments as $attachment) {
+
+            $attachment->temporary_url =
+                Storage::disk('backblaze')->temporaryUrl(
+                    $attachment->file_path,
+                    now()->addMinutes(10)
+                );
+        }
 
         return view('tasks.edit', compact('task', 'projects', 'users'));
     }
@@ -101,9 +137,28 @@ class TaskController extends Controller
             'status' => 'required|in:todo,in_progress,in_review,completed',
             'priority' => 'required|in:Low,Medium,High',
             'due_date' => 'nullable|date',
+            'attachments.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:10240',
         ]);
 
         $task->update($validated);
+
+        // Upload new attachments
+        if ($request->hasFile('attachments')) {
+
+            foreach ($request->file('attachments') as $file) {
+
+                $path = $file->store(
+                    'attachments',
+                    'backblaze'
+                );
+
+                $task->attachments()->create([
+                    'uploaded_by' => auth()->id(),
+                    'file_path' => $path,
+                    'file_name' => $file->getClientOriginalName(),
+                ]);
+            }
+        }
 
         return redirect()->route('tasks.index')->with('success', 'Task updated successfully.');
     }

@@ -69,4 +69,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(TaskReview::class);
     }
+
+    public function attachments()
+    {
+        return $this->hasMany(Attachment::class, 'uploaded_by');
+    }
 }
