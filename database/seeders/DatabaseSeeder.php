@@ -50,6 +50,7 @@ class DatabaseSeeder extends Seeder
             'description' => 'Kokan Soundarya is a homestay service provider in the Konkan region of Maharashtra, India. They needs a brand site to showcase their services, attract customers, and provide information about their offerings.',
             'status' => 'in_progress',
             'deadline' => now()->addDays(30),
+            'created_by' => 2,
         ]);
 
         $project2 = Project::factory()->create([
@@ -58,39 +59,56 @@ class DatabaseSeeder extends Seeder
             'description' => 'Art Life Studio is an art gallery and studio that needs a website to showcase their artists, exhibitions, and art classes. The website should provide information about the studio, upcoming events, and allow visitors to contact the studio for inquiries.',
             'status' => 'in_progress',
             'deadline' => now()->addDays(30),
+            'created_by' => 2,
         ]);
 
         $project1->users()->attach([2, 3]);
         $project2->users()->attach([2, 3]);
 
-        Task::factory()->create([
-            'id' => 1,
-            'project_id' => 1,
-            'title' => 'Design Homepage',
-            'description' => 'Create a visually appealing homepage that highlights the key features of Kokan Soundarya and encourages visitors to explore the site.',
-            'status' => 'in_progress',
-            'assignee_id' => 3,
-        ], [
-            'id' => 2,
-            'project_id' => 1,
-            'title' => 'Develop Booking System',
-            'description' => 'Implement a booking system that allows customers to check availability, make reservations, and receive confirmation emails.',
-            'status' => 'in_progress',
-            'assignee_id' => 3,
-        ], [
-            'id' => 3,
-            'project_id' => 2,
-            'title' => 'Create Artist Profiles',
-            'description' => 'Develop individual artist profile pages that showcase their work, biography, and upcoming exhibitions.',
-            'status' => 'in_progress',
-            'assignee_id' => 3,
-        ], [
-            'id' => 4,
-            'project_id' => 2,
-            'title' => 'Set Up Contact Form',
-            'description' => 'Implement a contact form that allows visitors to send inquiries about art classes and exhibitions.',
-            'status' => 'in_progress',
-            'assignee_id' => 3,
+        Task::insert([
+            [
+                'id' => 1,
+                'project_id' => 1,
+                'title' => 'Design Homepage',
+                'description' => 'Create a visually appealing homepage that highlights the key features of Kokan Soundarya and encourages visitors to explore the site.',
+                'status' => 'in_progress',
+                'assignee_id' => 3,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+
+            [
+                'id' => 2,
+                'project_id' => 1,
+                'title' => 'Develop Booking System',
+                'description' => 'Implement a booking system that allows customers to check availability, make reservations, and receive confirmation emails.',
+                'status' => 'in_progress',
+                'assignee_id' => 3,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+
+            [
+                'id' => 3,
+                'project_id' => 2,
+                'title' => 'Create Artist Profiles',
+                'description' => 'Develop individual artist profile pages that showcase their work, biography, and upcoming exhibitions.',
+                'status' => 'in_progress',
+                'assignee_id' => 3,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+
+            [
+                'id' => 4,
+                'project_id' => 2,
+                'title' => 'Set Up Contact Form',
+                'description' => 'Implement a contact form that allows visitors to send inquiries about art classes and exhibitions.',
+                'status' => 'in_progress',
+                'assignee_id' => 3,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 }
