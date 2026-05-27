@@ -53,8 +53,6 @@ return [
             'secret' => env('AWS_SECRET_ACCESS_KEY'),
             'region' => env('AWS_DEFAULT_REGION'),
             'bucket' => env('AWS_BUCKET'),
-            'url' => env('AWS_URL'),
-            'endpoint' => env('AWS_ENDPOINT'),
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => false,
             'report' => false,
@@ -67,6 +65,19 @@ return [
             'region' => env('B3_REGION'),
             'bucket' => env('B3_BUCKET'),
             'endpoint' => env('B3_ENDPOINT'),
+            'throw' => true,
+            'use_path_style_endpoint' => true,
+        ],
+
+        'r2' => [
+            'driver' => 's3',
+            'key' => env('R2_ACCESS_KEY_ID'),
+            'secret' => env('R2_SECRET_ACCESS_KEY'),
+            'region' => env('R2_REGION'),
+            'bucket' => env('R2_BUCKET'),
+            'endpoint' => env('R2_ENDPOINT'),
+            'url' => env('R2_URL'),
+            'use_path_style_endpoint' => false,
             'throw' => true,
         ],
 
