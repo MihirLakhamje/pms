@@ -28,73 +28,6 @@
 
     @auth
         <div class="bg-base-200 flex min-h-screen flex-col">
-            <!-- ---------- HEADER ---------- -->
-            <div class="bg-base-100 border-base-content/20 sticky top-0 z-50 flex border-b lg:ps-75">
-                <div class="mx-auto w-full">
-                    <nav class="navbar py-2">
-                        <div class="navbar-start items-center gap-4">
-                            <button type="button" class="btn btn-soft btn-square btn-sm lg:hidden" aria-haspopup="dialog"
-                                aria-expanded="false" aria-controls="layout-toggle" data-overlay="#layout-toggle">
-                                <span class="icon-[tabler--menu-2] size-4.5"></span>
-                            </button>
-                        </div>
-
-                        <div class="navbar-end gap-6">
-
-                            <!-- Profile Dropdown -->
-                            <div class="dropdown relative inline-flex [--offset:21]">
-                                <button id="profile-dropdown" type="button" class="dropdown-toggle avatar"
-                                    aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
-                                    <span class="rounded-field size-9.5">
-                                        <img src="https://cdn.flyonui.com/fy-assets/avatar/avatar-5.png"
-                                            alt="User Avatar" />
-                                    </span>
-                                </button>
-                                <ul class="dropdown-menu dropdown-open:opacity-100 hidden w-full max-w-75 space-y-0.5"
-                                    role="menu" aria-orientation="vertical" aria-labelledby="profile-dropdown">
-                                    <li class="dropdown-header mb-1 gap-4 px-5 pt-4.5 pb-3.5">
-                                        <div class="avatar avatar-online-top">
-                                            <div class="w-10 rounded-full">
-                                                <img src="https://cdn.flyonui.com/fy-assets/avatar/avatar-5.png"
-                                                    alt="avatar" />
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <h6 class="text-base-content mb-0.5 font-semibold">Mitchell Johnson</h6>
-                                            <p class="text-base-content/80 font-medium">Influencer</p>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item px-3" href="#">
-                                            <span class="icon-[tabler--user] size-5"></span>
-                                            My account
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item px-3" href="#">
-                                            <span class="icon-[tabler--settings] size-5"></span>
-                                            Setting
-                                        </a>
-                                    </li>
-                                    <li class="dropdown-footer p-2 pt-1">
-                                        <form action="{{ route('logout') }}" method="GET" class="w-full">
-                                            @csrf
-                                            <button type="submit"
-                                                class="btn btn-text btn-error h-11 justify-start px-3 font-normal w-full"
-                                                href="#">
-                                                <span class="icon-[tabler--logout] size-5"></span>
-                                                Logout
-                                            </button>
-                                        </form>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </nav>
-                </div>
-            </div>
-            <!-- ---------- END HEADER ---------- -->
-
             <!-- ---------- MAIN SIDEBAR ---------- -->
             <aside id="layout-toggle"
                 class="overlay overlay-open:translate-x-0 drawer drawer-start inset-y-0 start-0 hidden h-full [--auto-close:lg] sm:w-75 lg:z-50 lg:block lg:translate-x-0 lg:shadow-none"
@@ -109,7 +42,7 @@
                             class="text-base-content border-base-content/20 flex flex-col items-center gap-4 border-b px-4 py-6">
                             <div class="avatar">
                                 <div class="size-17 rounded-full">
-                                    <img src="https://cdn.flyonui.com/fy-assets/avatar/avatar-5.png" alt="avatar" />
+                                    <img src="{{ Storage::disk('r2')->temporaryUrl(Auth::user()->profile_image, now()->addDays(7)) }}" alt="User profile avatar for authenticated user" />
                                 </div>
                             </div>
                             <div class="text-center">
@@ -123,6 +56,11 @@
                                 <x-sidebar-link href="{{ route('dashboard') }}" :isActive="request()->routeIs('dashboard')">
                                     <span class="icon-[tabler--dashboard] size-4.5"></span>
                                     Dashboard
+                                </x-sidebar-link>
+
+                                <x-sidebar-link href="{{ route('account.index') }}" :isActive="request()->routeIs('account.*')">
+                                    <span class="icon-[tabler--user] size-4.5"></span>
+                                    Account
                                 </x-sidebar-link>
 
                                 <x-sidebar-link href="{{ route('users.index') }}"
@@ -141,6 +79,13 @@
                                     :isActive="request()->routeIs('tasks.index') || request()->routeIs('tasks.*')">
                                     <span class="icon-[tabler--subtask] size-4.5"></span>
                                     Tasks
+                                </x-sidebar-link>
+
+                                <x-sidebar-link href="{{ route('logout') }}" :isActive="request()->routeIs('logout')">
+                                    <span class="icon-[tabler--logout] size-4.5 text-error"></span>
+                                    <span class="text-error">
+                                        Logout
+                                    </span>
                                 </x-sidebar-link>
                             </ul>
                         </div>

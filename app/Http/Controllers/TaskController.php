@@ -59,7 +59,7 @@ class TaskController extends Controller
         if ($request->hasFile('attachments')) {
 
             foreach ($request->file('attachments') as $file) {
-                $path = $file->store('attachments', 'backblaze');
+                $path = $file->store('attachments', 'r2');
 
                 $task->attachments()->create([
                     'uploaded_by' => auth()->id(),
@@ -95,7 +95,7 @@ class TaskController extends Controller
         foreach ($task->attachments as $attachment) {
 
             $attachment->temporary_url =
-                Storage::disk('backblaze')->temporaryUrl(
+                Storage::disk('r2')->temporaryUrl(
                     $attachment->file_path,
                     now()->addMinutes(10)
                 );
@@ -116,7 +116,7 @@ class TaskController extends Controller
         foreach ($task->attachments as $attachment) {
 
             $attachment->temporary_url =
-                Storage::disk('backblaze')->temporaryUrl(
+                Storage::disk('r2')->temporaryUrl(
                     $attachment->file_path,
                     now()->addMinutes(10)
                 );
@@ -149,7 +149,7 @@ class TaskController extends Controller
 
                 $path = $file->store(
                     'attachments',
-                    'backblaze'
+                    'r2'
                 );
 
                 $task->attachments()->create([
