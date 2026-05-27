@@ -42,7 +42,10 @@
                             class="text-base-content border-base-content/20 flex flex-col items-center gap-4 border-b px-4 py-6">
                             <div class="avatar">
                                 <div class="size-17 rounded-full">
-                                    <img src="{{ Storage::disk('r2')->temporaryUrl(Auth::user()->profile_image, now()->addDays(7)) }}" alt="User profile avatar for authenticated user" />
+                                    <img src="{{ Auth::user()->profile_image
+                                        ? Storage::disk('r2')->temporaryUrl(Auth::user()->profile_image, now()->addDays(7))
+                                        : 'https://cdn.flyonui.com/fy-assets/avatar/avatar-5.png' }}"
+                                        alt="User profile avatar for authenticated user" />
                                 </div>
                             </div>
                             <div class="text-center">
@@ -63,20 +66,17 @@
                                     Account
                                 </x-sidebar-link>
 
-                                <x-sidebar-link href="{{ route('users.index') }}"
-                                    :isActive="request()->routeIs('users.index') || request()->routeIs('users.*')">
+                                <x-sidebar-link href="{{ route('users.index') }}" :isActive="request()->routeIs('users.index') || request()->routeIs('users.*')">
                                     <span class="icon-[tabler--users-group] size-4.5"></span>
                                     Users
                                 </x-sidebar-link>
 
-                                <x-sidebar-link href="{{ route('projects.index') }}"
-                                    :isActive="request()->routeIs('projects.index') || request()->routeIs('projects.*')">
+                                <x-sidebar-link href="{{ route('projects.index') }}" :isActive="request()->routeIs('projects.index') || request()->routeIs('projects.*')">
                                     <span class="icon-[tabler--bulb] size-4.5"></span>
                                     Projects
                                 </x-sidebar-link>
 
-                                <x-sidebar-link href="{{ route('tasks.index') }}"
-                                    :isActive="request()->routeIs('tasks.index') || request()->routeIs('tasks.*')">
+                                <x-sidebar-link href="{{ route('tasks.index') }}" :isActive="request()->routeIs('tasks.index') || request()->routeIs('tasks.*')">
                                     <span class="icon-[tabler--subtask] size-4.5"></span>
                                     Tasks
                                 </x-sidebar-link>
