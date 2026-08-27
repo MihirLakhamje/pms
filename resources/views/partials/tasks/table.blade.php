@@ -22,8 +22,8 @@
                 <td>
                     <span class="font-semibold 
                                                                                                                                 {{ $task->status === 'completed' ? 'text-success' :
-                    ($task->status === 'in_progress' ? 'text-warning' :
-                        ($task->status === 'in_review' ? 'text-info' : 'text-neutral')) }}">
+            ($task->status === 'in_progress' ? 'text-warning' :
+                ($task->status === 'in_review' ? 'text-info' : 'text-neutral')) }}">
                         {{ ucfirst(str_replace('_', ' ', $task->status)) }}
                     </span>
                 </td>
@@ -32,7 +32,7 @@
                 <td>
                     <span class="font-semibold 
                                                                                                                                 {{ $task->priority === 'High' ? 'text-error' :
-                    ($task->priority === 'Medium' ? 'text-warning' : 'text-success') }}">
+            ($task->priority === 'Medium' ? 'text-warning' : 'text-success') }}">
                         {{ $task->priority }}
                     </span>
                 </td>

@@ -21,10 +21,10 @@ class TimesheetPolicy
      */
     public function view(User $user, Timesheet $timesheet): bool
     {
-        if($user->role === 'admin') {
+        if ($user->role === 'admin') {
             return true;
         }
-        if($user->role === 'manager') {
+        if ($user->role === 'manager') {
             return true;
         }
         return $user->id === $timesheet->user_id;

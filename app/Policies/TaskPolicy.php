@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\Project;
 use App\Models\Task;
 use App\Models\User;
 
@@ -59,6 +60,24 @@ class TaskPolicy
     public function create(User $user): bool
     {
         return in_array($user->role, ['admin', 'manager']);
+    }
+
+    // --------------------------
+    // STORE TASK
+    // --------------------------
+    public function store(User $user, Project $project): bool
+    {
+        if ($user->role === 'admin') {
+            return true;
+        }
+
+        if ($user->role === 'manager') {
+            return $project->users()
+                ->where('users.id', $user->id)
+                ->exists();
+        }
+
+        return false;
     }
 
     // --------------------------

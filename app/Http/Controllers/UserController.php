@@ -17,13 +17,13 @@ class UserController extends Controller
     {
         return view('users.edit', compact('user'));
     }
-    
+
     public function update(Request $request, User $user)
     {
         $request->validate([
-            'name' => ['required','string','max:255'],
-            'email' => ['required','email','max:255','unique:users,email,'. $user->id],
-            'role' => ['required', 'string','in:admin,manager,employee'],
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'role' => ['required', 'string', 'in:admin,manager,employee'],
         ]);
         try {
             $user->update([
@@ -48,10 +48,10 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => ['required','string','max:255'],
-            'email' => ['required','email','max:255','unique:users,email'],
-            'role' => ['required', 'string','in:admin,manager,employee'],
-            'password' => ['required','string','min:6'],
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'role' => ['required', 'string', 'in:admin,manager,employee'],
+            'password' => ['required', 'string', 'min:6'],
         ]);
         try {
             $validated['password'] = bcrypt($validated['password']);

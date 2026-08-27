@@ -1,67 +1,60 @@
 <x-layout>
     <x-slot name="title">Edit Project</x-slot>
 
-    <div class="card p-8 max-w-xl w-full">
+    <div class="card p-8 w-full">
         <form method="POST" action="{{ route('projects.update', $project) }}?redirect={{ route('projects.index') }}"
             class="flex flex-col gap-6">
             @csrf
             @method('PATCH')
-            {{-- Project Name --}}
-            <div>
-                <label for="name" class="label-text font-medium">Project Name <span class="text-error">*</span></label>
-                <input type="text" id="name" name="name" value="{{ old('name', $project->name) }}"
-                    class="input w-full @error('name') input-error @enderror" placeholder="e.g. Website Redesign" />
-                @error('name')
-                    <span class="text-error text-sm">{{ $message }}</span>
-                @enderror
-            </div>
 
-            {{-- Description --}}
-            <div>
-                <label for="description" class="label-text font-medium">Description (optional)</label>
-                <textarea id="description" name="description"
-                    class="textarea w-full min-h-[120px] @error('description') textarea-error @enderror"
-                    placeholder="Write about the project...">{{ old('description', $project->description) }}</textarea>
-                @error('description')
-                    <span class="text-error text-sm">{{ $message }}</span>
-                @enderror
-            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {{-- Project Name --}}
+                <div>
+                    <label for="name" class="label-text font-medium">Project Name <span
+                            class="text-error">*</span></label>
+                    <input type="text" id="name" name="name" value="{{ old('name', $project->name) }}"
+                        class="input w-full @error('name') input-error @enderror" placeholder="e.g. Website Redesign" />
+                    @error('name')
+                        <span class="text-error text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
 
-            {{-- Status --}}
-            <div>
-                <label for="status" class="label-text font-medium">Status <span class="text-error">*</span></label>
-                <select id="status" name="status" class="select w-full @error('status') select-error @enderror">
-                    <option value="">Select status</option>
-                    <option value="in_progress" {{ old('status', $project->status) === 'in_progress' ? 'selected' : '' }}>
-                        In Progress
-                    </option>
-                    <option value="on_hold" {{ old('status', $project->status) === 'on_hold' ? 'selected' : '' }}>On Hold
-                    </option>
-                    <option value="completed" {{ old('status', $project->status) === 'completed' ? 'selected' : '' }}>
-                        Completed</option>
-                </select>
-                @error('status')
-                    <span class="text-error text-sm">{{ $message }}</span>
-                @enderror
-            </div>
+                {{-- Status --}}
+                <div>
+                    <label for="status" class="label-text font-medium">Status <span class="text-error">*</span></label>
+                    <select id="status" name="status" class="select w-full @error('status') select-error @enderror">
+                        <option value="">Select status</option>
+                        <option value="in_progress" {{ old('status', $project->status) === 'in_progress' ? 'selected' : '' }}>
+                            In Progress
+                        </option>
+                        <option value="on_hold" {{ old('status', $project->status) === 'on_hold' ? 'selected' : '' }}>On
+                            Hold
+                        </option>
+                        <option value="completed" {{ old('status', $project->status) === 'completed' ? 'selected' : '' }}>
+                            Completed</option>
+                    </select>
+                    @error('status')
+                        <span class="text-error text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
 
-            {{-- Deadline --}}
-            <div>
-                <label for="deadline" class="label-text font-medium">Deadline (optional)</label>
-                <input type="date" id="deadline" name="deadline"
-                    value="{{ old('deadline', optional($project->deadline)->format('Y-m-d')) }}"
-                    class="input w-full @error('deadline') input-error @enderror" />
-                @error('deadline')
-                    <span class="text-error text-sm">{{ $message }}</span>
-                @enderror
-            </div>
+                {{-- Deadline --}}
+                <div>
+                    <label for="deadline" class="label-text font-medium">Deadline (optional)</label>
+                    <input type="date" id="deadline" name="deadline"
+                        value="{{ old('deadline', optional($project->deadline)->format('Y-m-d')) }}"
+                        class="input w-full @error('deadline') input-error @enderror" />
+                    @error('deadline')
+                        <span class="text-error text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
 
-            {{-- Members --}}
-            <div>
-                <label for="users" class="label-text font-medium mb-2 block">Assign Team Members (optional)</label>
+                {{-- Members --}}
+                <div>
+                    <label for="users" class="label-text font-medium block">Assign Team Members (optional)</label>
 
-                <div class="max-w-full">
-                    <select id="users" name="users[]" multiple data-select='{
+                    <div class="max-w-full">
+                        <select id="users" name="users[]" multiple data-select='{
                             "placeholder": "Select team members",
                             "toggleTag": "<button type=\"button\" aria-expanded=\"false\"></button>",
                             "toggleClasses": "advance-select-toggle select-disabled:pointer-events-none select-disabled:opacity-40",
@@ -71,17 +64,29 @@
                             "optionTemplate": "<div class=\"flex justify-between items-center w-full\"><span data-title></span><span class=\"icon-[tabler--check] shrink-0 size-4 text-primary hidden selected:block\"></span></div>",
                             "extraMarkup": "<span class=\"icon-[tabler--caret-up-down] shrink-0 size-4 text-base-content absolute top-1/2 end-3 -translate-y-1/2\"></span>"
                         }' class="hidden">
-                        @foreach($users as $user)
-                            <option value="{{ $user->id }}" {{ $project->users->contains('id', $user->id) ? 'selected' : '' }}>
-                                {{ ucfirst($user->name) }}
-                            </option>
-                        @endforeach
-                    </select>
+                            @foreach($users as $user)
+                                <option value="{{ $user->id }}" {{ $project->users->contains('id', $user->id) ? 'selected' : '' }}>
+                                    {{ ucfirst($user->name) }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    @error('users')
+                        <span class="text-error text-sm">{{ $message }}</span>
+                    @enderror
                 </div>
 
-                @error('users')
-                    <span class="text-error text-sm">{{ $message }}</span>
-                @enderror
+                {{-- Description --}}
+                <div>
+                    <label for="description" class="label-text font-medium">Description (optional)</label>
+                    <textarea id="description" name="description"
+                        class="textarea w-full min-h-[120px] @error('description') textarea-error @enderror"
+                        placeholder="Write about the project...">{{ old('description', $project->description) }}</textarea>
+                    @error('description')
+                        <span class="text-error text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
             </div>
 
             {{-- Buttons --}}

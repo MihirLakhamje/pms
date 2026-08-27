@@ -38,8 +38,8 @@
             @foreach ($topEmployees as $user)
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="font-semibold">{{ $user->name }}</p>
-                        <p class="text-sm text-base-content/60">{{ $user->tasks_count }} tasks</p>
+                        <p class="font-semibold">{{ $user->assignee->name ?? 'Unassigned' }}</p>
+                        <p class="text-sm text-base-content/60">{{ $user->total }} tasks</p>
                     </div>
                     <span class="badge badge-primary badge-md">#{{ $loop->iteration }}</span>
                 </div>

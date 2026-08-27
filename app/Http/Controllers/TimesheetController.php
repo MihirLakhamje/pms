@@ -61,7 +61,7 @@ class TimesheetController extends Controller
     // 🔹 Stop running timer
     public function stopTimer(Request $request)
     {
-        
+
         $validated = $request->validate([
             'note' => 'nullable|string|max:255',
             'task_id' => 'required|exists:tasks,id',

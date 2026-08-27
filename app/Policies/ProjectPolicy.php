@@ -39,7 +39,7 @@ class ProjectPolicy
      */
     public function view(User $user, Project $project): bool
     {
-       return in_array($user->role, ['admin', 'manager', 'employee']);
+        return in_array($user->role, ['admin', 'manager', 'employee']);
     }
 
     /**

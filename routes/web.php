@@ -8,6 +8,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\TaskReviewController;
 use App\Http\Controllers\TimesheetController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -55,9 +56,11 @@ Route::middleware(['auth'])->group(function () {
         Route::patch('/{task}', [TaskController::class, 'update'])->name('tasks.update');
         Route::delete('/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
         // Route::post('/{task}/toggle-status', [TaskController::class, 'toggleStatus'])->name('tasks.toggleStatus');
+        Route::post('/add-comment', [TaskReviewController::class, 'store'])->name('task-reviews.store');
+        Route::delete('/{taskReview}/delete-comment', [TaskReviewController::class, 'destroy'])->name('task-reviews.destroy');
     });
     Route::get('/projects/{project}/users', [ProjectController::class, 'projectUsers'])
-    ->name('projects.users');
+        ->name('projects.users');
 
 
     Route::prefix('timesheets')->group(function () {
@@ -65,5 +68,12 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/stop-timer', [TimesheetController::class, 'stopTimer'])->name('timesheets.stopTimer');
         Route::delete('/{timesheet}', [TimesheetController::class, 'destroy'])->name('timesheets.destroy');
         Route::get('/{task}/task-timesheets', [TimesheetController::class, 'showTimesheets'])->name('timesheets.showTimesheets');
+    });
+
+    Route::prefix('reports')->group(function () {
+        Route::get('/projects', [TimesheetController::class, 'projectsReport'])->name('reports.projects');
+        Route::get('/tasks', [TimesheetController::class, 'taskReport'])->name('reports.tasks');
+        Route::get('/users', [TimesheetController::class, 'userReport'])->name('reports.users');
+        Route::get('/timesheets', [TimesheetController::class, 'timesheetReport'])->name('reports.timesheets');
     });
 });

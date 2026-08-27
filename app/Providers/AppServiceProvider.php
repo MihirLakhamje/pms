@@ -14,6 +14,7 @@ class AppServiceProvider extends ServiceProvider
         'App\Models\Project' => 'App\Policies\ProjectPolicy',
         'App\Models\Task' => 'App\Policies\TaskPolicy',
         'App\Models\Timesheet' => 'App\Policies\TimesheetPolicy',
+        'App\Models\TaskReview' => 'App\Policies\TaskReviewPolicy',
     ];
 
     /**
@@ -31,6 +32,10 @@ class AppServiceProvider extends ServiceProvider
     {
         Gate::define('role', function (User $user, array $roles) {
             return in_array($user->role, $roles);
+        });
+
+        Gate::define('viewReports', function ($user) {
+            return $user->role === 'admin';
         });
     }
 }

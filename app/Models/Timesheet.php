@@ -69,4 +69,24 @@ class Timesheet extends Model
     {
         return $this->end_time ? $this->end_time->timezone(config('app.timezone')) : null;
     }
+
+    public function totalDuration(): string
+    {
+        if (!$this->end_time) {
+            return '-';
+        }
+
+        $seconds = Carbon::parse($this->start_time)
+            ->diffInSeconds($this->end_time);
+
+        $days = intdiv($seconds, 86400);
+        $hours = intdiv($seconds % 86400, 3600);
+        $minutes = intdiv($seconds % 3600, 60);
+
+        if ($days > 0) {
+            return sprintf('%dd %02dhr %02dmin', $days, $hours, $minutes);
+        }
+
+        return sprintf('%02dhr %02dmin', $hours, $minutes);
+    }
 }

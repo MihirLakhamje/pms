@@ -57,10 +57,6 @@
                                 <span>
                                     Deadline: {{ optional($task->due_date)->format('d M') ?? 'No due' }}
                                 </span>
-
-                                <span>
-                                    {{ $task->assignee?->name ?? 'Unassigned' }}
-                                </span>
                             </div>
 
                             <div class="mt-3 flex justify-between">
