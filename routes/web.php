@@ -10,7 +10,9 @@ use App\Http\Controllers\SessionController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TaskReviewController;
 use App\Http\Controllers\TimesheetController;
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\UserController;
+
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [SessionController::class, 'loginPage'])->name('login');
@@ -27,6 +29,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/logout', [SessionController::class, 'logout'])->name('logout');
 
     Route::get('/dashboard', [DashboardController::class, '__invoke'])->name('dashboard');
+
+    Route::prefix('/account')->group(function () {
+        Route::get('/', [AccountController::class, 'index'])->name('account.index');
+        Route::patch('/update-profile', [AccountController::class, 'updateProfile'])->name('account.updateProfile');
+        Route::patch('/update-password', [AccountController::class, 'updatePassword'])->name('account.updatePassword');
+    });
 
     Route::prefix('users')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('users.index');

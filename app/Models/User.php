@@ -24,6 +24,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'profile_image',
     ];
 
     /**
@@ -68,5 +69,10 @@ class User extends Authenticatable
     public function reviews()
     {
         return $this->hasMany(TaskReview::class);
+    }
+
+    public function attachments()
+    {
+        return $this->hasMany(Attachment::class, 'uploaded_by');
     }
 }

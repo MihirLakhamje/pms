@@ -7,7 +7,11 @@
             @csrf
             @method('PATCH')
 
+<<<<<<< HEAD
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+=======
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+>>>>>>> 4ee398db56bd4ac653faf0a6175486b9a1064fcf
                 {{-- Project Name --}}
                 <div>
                     <label for="name" class="label-text font-medium">Project Name <span

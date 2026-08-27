@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\Project;
 use App\Models\Task;
+use App\Models\Project;
+use App\Models\Task;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -22,6 +24,7 @@ class DatabaseSeeder extends Seeder
 
         User::factory()->create([
             'id' => 1,
+            'id' => 1,
             'name' => 'admin',
             'email' => 'admin@gmail.com',
             'password' => Hash::make('123456'),
@@ -30,6 +33,7 @@ class DatabaseSeeder extends Seeder
 
         User::factory()->create([
             'id' => 2,
+            'id' => 2,
             'name' => 'manager',
             'email' => 'pm@gmail.com',
             'password' => Hash::make('123456'),
@@ -37,6 +41,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         User::factory()->create([
+            'id' => 3,
             'id' => 3,
             'name' => 'employee',
             'email' => 'emp@gmail.com',
